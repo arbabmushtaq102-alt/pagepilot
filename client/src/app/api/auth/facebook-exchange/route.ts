@@ -9,7 +9,7 @@ export async function POST(request: Request) {
     }
 
     const appId = process.env.NEXT_PUBLIC_META_APP_ID || "1633126671278758";
-    const appSecret = process.env.META_APP_SECRET || "4d6348e853339a26f0ae1dabbebe22e4";
+    const appSecret = process.env.META_APP_SECRET;
 
     if (!appSecret) {
       console.error("META_APP_SECRET is not defined in environment variables");
