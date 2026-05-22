@@ -88,14 +88,24 @@ export default function SettingsPage() {
     const hash = window.location.hash;
     if (hash && hash.includes("access_token=")) {
       const params = new URLSearchParams(hash.substring(1));
-      const accessToken = params.get("access_token");
-      if (accessToken) {
-        Promise.all([
-          fetch(`https://graph.facebook.com/v19.0/me/accounts?fields=id,name,access_token,category,picture&access_token=${accessToken}`).then(r => r.json()),
-          fetch(`https://graph.facebook.com/v19.0/me?fields=id,name,picture&access_token=${accessToken}`).then(r => r.json()),
-        ]).then(async ([pagesData, profileData]) => {
-          const pages = pagesData?.data || [];
-          const profile = profileData?.id ? { ...profileData, connected_date: new Date().toISOString() } : null;
+      const shortLivedToken = params.get("access_token");
+      if (shortLivedToken) {
+        setIsConnecting(true);
+        fetch('/api/auth/facebook-exchange', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ shortLivedToken })
+        }).then(res => res.json()).then(async (data) => {
+          if (data.error) {
+            console.error("Token exchange failed:", data.error);
+            alert("Connection error: Make sure META_APP_SECRET is set in Vercel.");
+            setIsConnecting(false);
+            return;
+          }
+
+          const pages = data.pages || [];
+          const profile = data.profile?.id ? { ...data.profile, connected_date: new Date().toISOString() } : null;
+          const longLivedToken = data.longLivedUserToken || shortLivedToken;
           
           if (pages.length > 0) {
             const pageIds = pages.map((p: any) => p.id);
@@ -121,11 +131,14 @@ export default function SettingsPage() {
 
           if (pages.length > 0) setConnectedPages(pages);
           if (profile) setFbUser(profile);
-          // ✅ Save to Supabase cloud so other devices get it
-          if (profile) await saveToCloud(pages, profile, accessToken);
+          // ✅ Save to Supabase cloud so other devices get it (using the LONG-LIVED token)
+          if (profile) await saveToCloud(pages, profile, longLivedToken);
           window.history.replaceState(null, '', window.location.pathname);
           setIsConnecting(false);
-        }).catch(() => { setIsConnecting(false); });
+        }).catch((err) => { 
+          console.error("Exchange error:", err);
+          setIsConnecting(false); 
+        });
         return;
       }
     }

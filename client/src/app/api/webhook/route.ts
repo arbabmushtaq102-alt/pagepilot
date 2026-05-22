@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
+import { waitUntil } from '@vercel/functions';
 
 const VERIFY_TOKEN = process.env.META_WEBHOOK_VERIFY_TOKEN || 'pagepilot_secure_token_123';
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
@@ -20,15 +21,11 @@ export async function GET(request: Request) {
   return new NextResponse('Forbidden', { status: 403 });
 }
 
-// 2. Receiving Incoming Messages & Bot Logic
-export async function POST(request: Request) {
-  try {
-    const body = await request.json();
-
-    if (body.object === 'page') {
-      for (const entry of body.entry) {
-        const webhookEvent = entry.messaging?.[0];
-        if (!webhookEvent || !webhookEvent.message || webhookEvent.message.is_echo) continue;
+async function processWebhookLogic(body: any) {
+  if (body.object === 'page') {
+    for (const entry of body.entry) {
+      const webhookEvent = entry.messaging?.[0];
+      if (!webhookEvent || !webhookEvent.message || webhookEvent.message.is_echo) continue;
 
         const senderId = webhookEvent.sender.id;
         const pageId = webhookEvent.recipient.id;
@@ -326,7 +323,22 @@ export async function POST(request: Request) {
           console.log('✅ Media reply sent!');
         }
       }
+    }
+  } catch (err) {
+    console.error('Webhook Error:', err);
+  }
+}
 
+// 2. Receiving Incoming Messages & Bot Logic
+export async function POST(request: Request) {
+  try {
+    const body = await request.json();
+
+    if (body.object === 'page') {
+      // Execute the heavy AI logic in the background using waitUntil so Facebook doesn't timeout!
+      waitUntil(processWebhookLogic(body));
+      
+      // Tell Facebook we got it immediately! Must be < 20s.
       return new NextResponse('EVENT_RECEIVED', { status: 200 });
     }
 
