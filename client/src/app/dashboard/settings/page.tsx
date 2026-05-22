@@ -98,7 +98,7 @@ export default function SettingsPage() {
         }).then(res => res.json()).then(async (data) => {
           if (data.error) {
             console.error("Token exchange failed:", data.error);
-            alert("Connection error: Make sure META_APP_SECRET is set in Vercel.");
+            alert(`Facebook Connection Error: ${data.error}\n\nIf you just added META_APP_SECRET to Vercel, remember you MUST Redeploy for it to take effect!`);
             setIsConnecting(false);
             return;
           }
