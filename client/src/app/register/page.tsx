@@ -72,7 +72,7 @@ export default function RegisterPage() {
       >
         <div className="flex justify-center mb-6">
           <div className="w-16 h-16 bg-white rounded-2xl flex items-center justify-center shadow-lg shadow-primary/20 overflow-hidden">
-            <img src="/logo.svg" alt="Pagepilot Logo" className="w-full h-full object-cover" onError={(e) => { e.currentTarget.style.display = 'none'; e.currentTarget.nextElementSibling?.classList.remove('hidden') }} />
+            <img src="/logo.svg" alt="Pagepilot Logo" className="w-full h-full object-cover" />
             <svg className="w-8 h-8 text-blue-500 hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
               <path d="M22 2L11 13" />
               <path d="M22 2L15 22L11 13L2 9L22 2Z" />

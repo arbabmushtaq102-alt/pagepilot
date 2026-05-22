@@ -36,7 +36,7 @@ export default function Sidebar() {
         <div className="p-6">
           <Link href="/" className="flex items-center gap-3">
             <div className="w-9 h-9 rounded-xl flex items-center justify-center bg-white shadow-lg overflow-hidden shrink-0">
-              <img src="/logo.svg" alt="Pagepilot Logo" className="w-full h-full object-cover" onError={(e) => { e.currentTarget.style.display = 'none'; e.currentTarget.nextElementSibling?.classList.remove('hidden') }} />
+              <img src="/logo.svg" alt="Pagepilot Logo" className="w-full h-full object-cover" />
               <MessageSquare className="w-5 h-5 text-blue-500 hidden" />
             </div>
             <span className="text-xl font-bold tracking-tight text-white">Pagepilot</span>

@@ -36,7 +36,7 @@ export default function ActivatePage() {
       >
         <div className="flex justify-center mb-6">
           <div className="w-16 h-16 bg-white rounded-2xl flex items-center justify-center shadow-lg shadow-emerald-500/20 overflow-hidden">
-            <img src="/logo.svg" alt="Pagepilot Logo" className="w-full h-full object-cover" onError={(e) => { e.currentTarget.style.display = 'none'; e.currentTarget.nextElementSibling?.classList.remove('hidden') }} />
+            <img src="/logo.svg" alt="Pagepilot Logo" className="w-full h-full object-cover" />
             <ShieldCheck className="w-8 h-8 text-emerald-500 hidden" />
           </div>
         </div>

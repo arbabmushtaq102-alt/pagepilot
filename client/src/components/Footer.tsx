@@ -13,7 +13,7 @@ export default function Footer() {
           <div className="md:col-span-7">
             <div className="flex items-center gap-3 mb-6">
               <div className="w-10 h-10 rounded-xl bg-white shadow-lg overflow-hidden shrink-0 flex items-center justify-center">
-                <img src="/logo.svg" alt="Pagepilot Logo" className="w-full h-full object-cover" onError={(e) => { e.currentTarget.style.display = 'none'; e.currentTarget.nextElementSibling?.classList.remove('hidden') }} />
+                <img src="/logo.svg" alt="Pagepilot Logo" className="w-full h-full object-cover" />
                 <MessageSquare className="w-5 h-5 text-blue-500 hidden" />
               </div>
               <h3 className="text-2xl font-bold text-white tracking-tight">Pagepilot</h3>

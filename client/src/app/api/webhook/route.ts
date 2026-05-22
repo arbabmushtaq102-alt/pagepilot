@@ -194,7 +194,7 @@ export async function POST(request: Request) {
               if (aiReply) {
                 replyMessage = aiReply.trim();
                 // Check if AI is trying to escalate to a human based on its generated response
-                const lowerReply = replyMessage.toLowerCase();
+                const lowerReply = aiReply.toLowerCase();
                 if (
                   lowerReply.includes("human agent") || 
                   lowerReply.includes("support agent") || 

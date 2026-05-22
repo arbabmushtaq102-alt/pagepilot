@@ -184,8 +184,8 @@ export default function LiveInbox({ filterPageId }: { filterPageId?: string | nu
           `https://graph.facebook.com/v19.0/${page.id}/conversations?fields=participants,messages.limit(20){message,from,created_time}&limit=30&access_token=${page.access_token}`;
         const allPageConvs: any[] = [];
         while (url) {
-          const res = await fetch(url);
-          const data = await res.json();
+          const res: any = await fetch(url);
+          const data: any = await res.json();
           if (data.error) throw new Error(data.error.message);
           allPageConvs.push(...(data.data || []));
           url = data.paging?.next || null;
