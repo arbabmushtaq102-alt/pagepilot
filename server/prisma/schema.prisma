@@ -1,0 +1,51 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String   @id @default(uuid())
+  email         String   @unique
+  name          String?
+  facebookId    String?  @unique
+  accessToken   String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  pages         Page[]
+}
+
+model Page {
+  id            String    @id @default(uuid())
+  pageId        String    @unique
+  name          String
+  accessToken   String
+  userId        String
+  user          User      @relation(fields: [userId], references: [id])
+  conversations Conversation[]
+}
+
+model Conversation {
+  id            String    @id @default(uuid())
+  facebookId    String    @unique
+  pageId        String
+  page          Page      @relation(fields: [pageId], references: [id])
+  customerName  String
+  customerFbId  String
+  updatedAt     DateTime  @updatedAt
+  messages      Message[]
+}
+
+model Message {
+  id             String       @id @default(uuid())
+  facebookMsgId  String       @unique
+  text           String
+  senderId       String
+  timestamp      DateTime
+  isUnread       Boolean      @default(true)
+  conversationId String
+  conversation   Conversation @relation(fields: [conversationId], references: [id])
+}

@@ -1,0 +1,51 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <defs>
+    <!-- Vibrant Background Gradient for P Shape -->
+    <linearGradient id="pGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#3B82F6" />
+      <stop offset="100%" stop-color="#1D4ED8" />
+    </linearGradient>
+    
+    <!-- Gradient for Paper Plane Top Wing -->
+    <linearGradient id="planeTop" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#93C5FD" />
+      <stop offset="100%" stop-color="#3B82F6" />
+    </linearGradient>
+
+    <!-- Gradient for Paper Plane Bottom Wing -->
+    <linearGradient id="planeBottom" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#2563EB" />
+      <stop offset="100%" stop-color="#1E40AF" />
+    </linearGradient>
+    
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="12" stdDeviation="12" flood-color="#000000" flood-opacity="0.15" />
+    </filter>
+  </defs>
+
+  <!-- The "P" Shape with mathematically perfect transparent hole -->
+  <path d="M 140 460 
+           L 140 160 
+           A 100 100 0 0 1 240 60 
+           L 310 60 
+           A 150 150 0 0 1 310 360 
+           L 240 360 
+           L 240 460 
+           Z
+           M 240 160 
+           L 240 260 
+           L 310 260 
+           A 50 50 0 0 0 310 160 
+           Z" 
+        fill="url(#pGrad)" filter="url(#shadow)" fill-rule="evenodd" />
+
+  <!-- Paper Plane overlay -->
+  <g filter="url(#shadow)">
+    <!-- Top Wing -->
+    <path d="M 100 380 L 380 260 L 220 380 Z" fill="url(#planeTop)" />
+    <!-- Bottom Wing -->
+    <path d="M 280 480 L 380 260 L 220 380 Z" fill="url(#planeBottom)" />
+    <!-- Dark Under-fold for 3D depth -->
+    <path d="M 280 480 L 220 380 L 220 440 Z" fill="#1E3A8A" />
+  </g>
+</svg>
