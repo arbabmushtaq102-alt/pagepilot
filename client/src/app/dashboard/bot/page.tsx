@@ -546,7 +546,7 @@ export default function BotPage() {
                     }}
                     style={{
                       display: "flex", alignItems: "center", gap: 8,
-                      padding: "10px 20px", borderRadius: 12, border: "none", cursor: "pointer", fontWeight: 600, fontSize: 14,
+                      padding: "10px 20px", borderRadius: 12, cursor: "pointer", fontWeight: 600, fontSize: 14,
                       background: (selectedPage.bot_mode === 'simple' && selectedPage.is_enabled) ? "#4ade8020" : "#1a1a2e",
                       color: (selectedPage.bot_mode === 'simple' && selectedPage.is_enabled) ? "#4ade80" : "#94a3b8",
                       border: `1px solid ${(selectedPage.bot_mode === 'simple' && selectedPage.is_enabled) ? "#4ade80" : "#2d2d5e"}`,
@@ -577,7 +577,7 @@ export default function BotPage() {
                     }}
                     style={{
                       display: "flex", alignItems: "center", gap: 8,
-                      padding: "10px 20px", borderRadius: 12, border: "none", cursor: "pointer", fontWeight: 600, fontSize: 14,
+                      padding: "10px 20px", borderRadius: 12, cursor: "pointer", fontWeight: 600, fontSize: 14,
                       background: (selectedPage.bot_mode === 'ai' && selectedPage.is_enabled) ? "#a78bfa20" : "#1a1a2e",
                       color: (selectedPage.bot_mode === 'ai' && selectedPage.is_enabled) ? "#a78bfa" : "#94a3b8",
                       border: `1px solid ${(selectedPage.bot_mode === 'ai' && selectedPage.is_enabled) ? "#a78bfa" : "#2d2d5e"}`,
