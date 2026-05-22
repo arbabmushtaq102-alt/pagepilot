@@ -233,7 +233,7 @@ async function processWebhookLogic(body: any) {
         }
 
         // --- 4. Handle fallback and escalation ---
-        if (botConfig?.bot_mode === 'ai' && (!replyMessage || needsEscalation)) {
+        if (!replyMessage || needsEscalation) {
           // Get sender name from Facebook
           let senderName = null;
           try {
@@ -262,13 +262,14 @@ async function processWebhookLogic(body: any) {
 
           console.log(`⚠️ [BOT ESCALATION] Escalated to human. Bot disabled for customer ${senderId}.`);
           
-          if (!replyMessage) {
-            // Use the configured fallback message, or a default error message if AI didn't generate one
+          if (!replyMessage && botConfig?.bot_mode === 'ai') {
+            // Use the configured fallback message ONLY for AI mode. Simple mode stays silent.
             replyMessage = botConfig?.fallback_message || "I'm sorry, I am an automated bot and I don't know the answer to that. A human agent has been notified and will assist you shortly.";
           }
-        } else if (!replyMessage) {
-          // If we are in Simple Bot mode and no keyword matched, just stay completely silent.
-          console.log(`⚫ [SIMPLE BOT] No keywords matched. Staying silent.`);
+        }
+
+        if (!replyMessage) {
+          console.log(`⚫ No reply generated. Staying silent.`);
           continue;
         }
 
