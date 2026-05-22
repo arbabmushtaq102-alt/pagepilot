@@ -22,8 +22,9 @@ export async function GET(request: Request) {
 }
 
 async function processWebhookLogic(body: any) {
-  if (body.object === 'page') {
-    for (const entry of body.entry) {
+  try {
+    if (body.object === 'page') {
+      for (const entry of body.entry) {
       const webhookEvent = entry.messaging?.[0];
       if (!webhookEvent || !webhookEvent.message || webhookEvent.message.is_echo) continue;
 
