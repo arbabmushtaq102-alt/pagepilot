@@ -117,31 +117,7 @@ export async function POST(request: Request) {
         const aiPrompt = botConfig?.ai_prompt || '';
         const aiModel = botConfig?.ai_model || 'google/gemini-2.5-flash';
 
-        // Try Keyword Matching if mode is simple or both
-        if (botMode === 'simple' || botMode === 'both') {
-          const { data: rules } = await supabase
-            .from('bot_rules')
-            .select('*')
-            .eq('page_id', pageId)
-            .eq('is_active', true);
-
-          if (rules && rules.length > 0) {
-            for (const rule of rules) {
-              const matched = rule.keywords.some((kw: string) =>
-                messageText.includes(kw.toLowerCase())
-              );
-              if (matched) {
-                replyMessage = rule.response;
-                replyMediaUrl = rule.media_url || null;
-                console.log(`💬 [KEYWORD BOT] Matched keyword rule: ${rule.keywords.join(', ')}`);
-                break;
-              }
-            }
-          }
-        }
-
-        // If no keyword rule matched, and AI mode is allowed, try AI
-        if (!replyMessage && (botMode === 'ai' || botMode === 'both')) {
+        if (botMode === 'ai') {
           console.log(`🤖 [AI BOT] Evaluating message with model: ${aiModel}`);
           const openRouterKey = process.env.OPENROUTER_API_KEY;
           
@@ -233,6 +209,27 @@ export async function POST(request: Request) {
               }
             } catch (aiErr) {
               console.error("❌ AI Request failed:", aiErr);
+            }
+          }
+        } else {
+          // Keyword Matching Mode
+          const { data: rules } = await supabase
+            .from('bot_rules')
+            .select('*')
+            .eq('page_id', pageId)
+            .eq('is_active', true);
+
+          if (rules && rules.length > 0) {
+            for (const rule of rules) {
+              const matched = rule.keywords.some((kw: string) =>
+                messageText.includes(kw.toLowerCase())
+              );
+              if (matched) {
+                replyMessage = rule.response;
+                replyMediaUrl = rule.media_url || null;
+                console.log(`💬 [KEYWORD BOT] Matched keyword rule: ${rule.keywords.join(', ')}`);
+                break;
+              }
             }
           }
         }
