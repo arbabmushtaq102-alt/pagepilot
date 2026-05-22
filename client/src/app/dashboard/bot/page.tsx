@@ -22,7 +22,7 @@ interface BotConfig {
   page_picture?: string;
   is_enabled: boolean;
   fallback_message: string;
-  bot_mode: "simple" | "ai";
+  bot_mode: "simple" | "ai" | "both";
   ai_prompt: string;
   ai_model: string;
 }
@@ -529,9 +529,32 @@ export default function BotPage() {
                   {/* Simple Bot Toggle */}
                   <button
                     onClick={async () => {
-                      // If it's already simple and enabled, turn it off. Otherwise, enable and set to simple.
-                      const willBeEnabled = !(selectedPage.bot_mode === 'simple' && selectedPage.is_enabled);
-                      const updated = { ...selectedPage, bot_mode: 'simple' as const, is_enabled: willBeEnabled };
+                      const isSimpleOn = selectedPage.is_enabled && (selectedPage.bot_mode === 'simple' || selectedPage.bot_mode === 'both');
+                      const isAiOn = selectedPage.is_enabled && (selectedPage.bot_mode === 'ai' || selectedPage.bot_mode === 'both');
+                      
+                      let newMode = selectedPage.bot_mode;
+                      let newEnabled = selectedPage.is_enabled;
+
+                      if (isSimpleOn) {
+                        // Turning OFF Simple Bot
+                        if (isAiOn) {
+                           newMode = 'ai';
+                           newEnabled = true;
+                        } else {
+                           newEnabled = false; // both were off
+                        }
+                      } else {
+                        // Turning ON Simple Bot
+                        if (isAiOn) {
+                           newMode = 'both';
+                           newEnabled = true;
+                        } else {
+                           newMode = 'simple';
+                           newEnabled = true;
+                        }
+                      }
+
+                      const updated = { ...selectedPage, bot_mode: newMode, is_enabled: newEnabled };
                       setSelectedPage(updated);
                       setPages(pages.map(p => p.page_id === selectedPage.page_id ? updated : p));
                       const { data: { user } } = await supabase.auth.getUser();
@@ -539,30 +562,53 @@ export default function BotPage() {
                         await supabase.from("bot_configs").upsert({
                           user_id: user.id, page_id: updated.page_id, page_name: updated.page_name,
                           is_enabled: updated.is_enabled, fallback_message: updated.fallback_message,
-                          bot_mode: 'simple', ai_prompt: updated.ai_prompt || '', ai_model: updated.ai_model || 'google/gemini-2.5-flash',
+                          bot_mode: updated.bot_mode, ai_prompt: updated.ai_prompt || '', ai_model: updated.ai_model || 'google/gemini-2.5-flash',
                           updated_at: new Date().toISOString(),
                         }, { onConflict: "user_id,page_id" });
                       }
                     }}
                     style={{
                       display: "flex", alignItems: "center", gap: 8,
-                      padding: "10px 20px", borderRadius: 12, cursor: "pointer", fontWeight: 600, fontSize: 14,
-                      background: (selectedPage.bot_mode === 'simple' && selectedPage.is_enabled) ? "#4ade8020" : "#1a1a2e",
-                      color: (selectedPage.bot_mode === 'simple' && selectedPage.is_enabled) ? "#4ade80" : "#94a3b8",
-                      border: `1px solid ${(selectedPage.bot_mode === 'simple' && selectedPage.is_enabled) ? "#4ade80" : "#2d2d5e"}`,
+                      padding: "10px 20px", borderRadius: 12, cursor: "pointer", fontWeight: 600, fontSize: 14, border: "1px solid transparent",
+                      background: (selectedPage.is_enabled && (selectedPage.bot_mode === 'simple' || selectedPage.bot_mode === 'both')) ? "#4ade8020" : "#1a1a2e",
+                      color: (selectedPage.is_enabled && (selectedPage.bot_mode === 'simple' || selectedPage.bot_mode === 'both')) ? "#4ade80" : "#94a3b8",
+                      borderColor: (selectedPage.is_enabled && (selectedPage.bot_mode === 'simple' || selectedPage.bot_mode === 'both')) ? "#4ade80" : "#2d2d5e",
                       transition: "all 0.2s"
                     }}
                   >
                     💬 Simple Bot 
-                    {(selectedPage.bot_mode === 'simple' && selectedPage.is_enabled) ? <ToggleRight size={20} /> : <ToggleLeft size={20} />}
+                    {(selectedPage.is_enabled && (selectedPage.bot_mode === 'simple' || selectedPage.bot_mode === 'both')) ? <ToggleRight size={20} /> : <ToggleLeft size={20} />}
                   </button>
 
                   {/* AI Bot Toggle */}
                   <button
                     onClick={async () => {
-                      // If it's already AI and enabled, turn it off. Otherwise, enable and set to AI.
-                      const willBeEnabled = !(selectedPage.bot_mode === 'ai' && selectedPage.is_enabled);
-                      const updated = { ...selectedPage, bot_mode: 'ai' as const, is_enabled: willBeEnabled };
+                      const isSimpleOn = selectedPage.is_enabled && (selectedPage.bot_mode === 'simple' || selectedPage.bot_mode === 'both');
+                      const isAiOn = selectedPage.is_enabled && (selectedPage.bot_mode === 'ai' || selectedPage.bot_mode === 'both');
+                      
+                      let newMode = selectedPage.bot_mode;
+                      let newEnabled = selectedPage.is_enabled;
+
+                      if (isAiOn) {
+                        // Turning OFF AI Bot
+                        if (isSimpleOn) {
+                           newMode = 'simple';
+                           newEnabled = true;
+                        } else {
+                           newEnabled = false; // both were off
+                        }
+                      } else {
+                        // Turning ON AI Bot
+                        if (isSimpleOn) {
+                           newMode = 'both';
+                           newEnabled = true;
+                        } else {
+                           newMode = 'ai';
+                           newEnabled = true;
+                        }
+                      }
+
+                      const updated = { ...selectedPage, bot_mode: newMode, is_enabled: newEnabled };
                       setSelectedPage(updated);
                       setPages(pages.map(p => p.page_id === selectedPage.page_id ? updated : p));
                       const { data: { user } } = await supabase.auth.getUser();
@@ -570,27 +616,27 @@ export default function BotPage() {
                         await supabase.from("bot_configs").upsert({
                           user_id: user.id, page_id: updated.page_id, page_name: updated.page_name,
                           is_enabled: updated.is_enabled, fallback_message: updated.fallback_message,
-                          bot_mode: 'ai', ai_prompt: updated.ai_prompt || '', ai_model: updated.ai_model || 'google/gemini-2.5-flash',
+                          bot_mode: updated.bot_mode, ai_prompt: updated.ai_prompt || '', ai_model: updated.ai_model || 'google/gemini-2.5-flash',
                           updated_at: new Date().toISOString(),
                         }, { onConflict: "user_id,page_id" });
                       }
                     }}
                     style={{
                       display: "flex", alignItems: "center", gap: 8,
-                      padding: "10px 20px", borderRadius: 12, cursor: "pointer", fontWeight: 600, fontSize: 14,
-                      background: (selectedPage.bot_mode === 'ai' && selectedPage.is_enabled) ? "#a78bfa20" : "#1a1a2e",
-                      color: (selectedPage.bot_mode === 'ai' && selectedPage.is_enabled) ? "#a78bfa" : "#94a3b8",
-                      border: `1px solid ${(selectedPage.bot_mode === 'ai' && selectedPage.is_enabled) ? "#a78bfa" : "#2d2d5e"}`,
+                      padding: "10px 20px", borderRadius: 12, cursor: "pointer", fontWeight: 600, fontSize: 14, border: "1px solid transparent",
+                      background: (selectedPage.is_enabled && (selectedPage.bot_mode === 'ai' || selectedPage.bot_mode === 'both')) ? "#a78bfa20" : "#1a1a2e",
+                      color: (selectedPage.is_enabled && (selectedPage.bot_mode === 'ai' || selectedPage.bot_mode === 'both')) ? "#a78bfa" : "#94a3b8",
+                      borderColor: (selectedPage.is_enabled && (selectedPage.bot_mode === 'ai' || selectedPage.bot_mode === 'both')) ? "#a78bfa" : "#2d2d5e",
                       transition: "all 0.2s"
                     }}
                   >
                     🤖 AI Assistant 
-                    {(selectedPage.bot_mode === 'ai' && selectedPage.is_enabled) ? <ToggleRight size={20} /> : <ToggleLeft size={20} />}
+                    {(selectedPage.is_enabled && (selectedPage.bot_mode === 'ai' || selectedPage.bot_mode === 'both')) ? <ToggleRight size={20} /> : <ToggleLeft size={20} />}
                   </button>
                 </div>
 
-                {selectedPage.bot_mode === 'ai' ? (
-                  <div style={{ background: "#1a1a2e", border: "1px solid #2d2d5e", borderRadius: 12, padding: 24 }}>
+                {(selectedPage.bot_mode === 'ai' || selectedPage.bot_mode === 'both') && (
+                  <div style={{ background: "#1a1a2e", border: "1px solid #2d2d5e", borderRadius: 12, padding: 24, marginBottom: 24 }}>
                     <h3 style={{ margin: "0 0 8px", fontSize: 16, fontWeight: 700, color: "#fff" }}>🤖 AI Assistant Instructions</h3>
                     <p style={{ margin: "0 0 20px", fontSize: 12, color: "#64748b" }}>
                       Write instructions to guide your AI Bot. Describe your company, support policies, tone, and specific ways it should reply.
@@ -645,8 +691,10 @@ export default function BotPage() {
                       {savedMsg && <span style={{ color: "#4ade80", fontSize: 13, fontWeight: 600 }}>{savedMsg}</span>}
                     </div>
                   </div>
-                ) : (
-                  <>
+                )}
+
+                {(selectedPage.bot_mode === 'simple' || selectedPage.bot_mode === 'both') && (
+                  <div style={{ background: "#0d0d1f", borderRadius: 12, padding: selectedPage.bot_mode === 'both' ? 0 : 4 }}>
                     {/* Rules List */}
                     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
                       <div>
@@ -853,7 +901,7 @@ export default function BotPage() {
                         </div>
                       ))
                     )}
-                  </>
+                  </div>
                 )}
               </>
             )}
