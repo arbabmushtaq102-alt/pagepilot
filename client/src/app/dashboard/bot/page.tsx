@@ -523,11 +523,15 @@ export default function BotPage() {
           <div style={{ padding: 24, flex: 1 }}>
             {selectedPage && (
               <>
-                {/* Bot Mode Tabs */}
+                {/* Bot Mode Tabs / Toggles */}
                 <div style={{ display: "flex", gap: 12, borderBottom: "1px solid #1e1e3f", paddingBottom: 16, marginBottom: 20 }}>
+                  
+                  {/* Simple Bot Toggle */}
                   <button
                     onClick={async () => {
-                      const updated = { ...selectedPage, bot_mode: 'simple' as const };
+                      // If it's already simple and enabled, turn it off. Otherwise, enable and set to simple.
+                      const willBeEnabled = !(selectedPage.bot_mode === 'simple' && selectedPage.is_enabled);
+                      const updated = { ...selectedPage, bot_mode: 'simple' as const, is_enabled: willBeEnabled };
                       setSelectedPage(updated);
                       setPages(pages.map(p => p.page_id === selectedPage.page_id ? updated : p));
                       const { data: { user } } = await supabase.auth.getUser();
@@ -541,17 +545,24 @@ export default function BotPage() {
                       }
                     }}
                     style={{
-                      padding: "8px 16px", borderRadius: 8, border: "none", cursor: "pointer", fontWeight: 600, fontSize: 13,
-                      background: selectedPage.bot_mode === 'simple' ? "#a78bfa" : "#1a1a2e",
-                      color: selectedPage.bot_mode === 'simple' ? "#fff" : "#94a3b8",
+                      display: "flex", alignItems: "center", gap: 8,
+                      padding: "10px 20px", borderRadius: 12, border: "none", cursor: "pointer", fontWeight: 600, fontSize: 14,
+                      background: (selectedPage.bot_mode === 'simple' && selectedPage.is_enabled) ? "#4ade8020" : "#1a1a2e",
+                      color: (selectedPage.bot_mode === 'simple' && selectedPage.is_enabled) ? "#4ade80" : "#94a3b8",
+                      border: `1px solid ${(selectedPage.bot_mode === 'simple' && selectedPage.is_enabled) ? "#4ade80" : "#2d2d5e"}`,
                       transition: "all 0.2s"
                     }}
                   >
-                    💬 Simple (Keywords)
+                    💬 Simple Bot 
+                    {(selectedPage.bot_mode === 'simple' && selectedPage.is_enabled) ? <ToggleRight size={20} /> : <ToggleLeft size={20} />}
                   </button>
+
+                  {/* AI Bot Toggle */}
                   <button
                     onClick={async () => {
-                      const updated = { ...selectedPage, bot_mode: 'ai' as const };
+                      // If it's already AI and enabled, turn it off. Otherwise, enable and set to AI.
+                      const willBeEnabled = !(selectedPage.bot_mode === 'ai' && selectedPage.is_enabled);
+                      const updated = { ...selectedPage, bot_mode: 'ai' as const, is_enabled: willBeEnabled };
                       setSelectedPage(updated);
                       setPages(pages.map(p => p.page_id === selectedPage.page_id ? updated : p));
                       const { data: { user } } = await supabase.auth.getUser();
@@ -565,13 +576,16 @@ export default function BotPage() {
                       }
                     }}
                     style={{
-                      padding: "8px 16px", borderRadius: 8, border: "none", cursor: "pointer", fontWeight: 600, fontSize: 13,
-                      background: selectedPage.bot_mode === 'ai' ? "#a78bfa" : "#1a1a2e",
-                      color: selectedPage.bot_mode === 'ai' ? "#fff" : "#94a3b8",
+                      display: "flex", alignItems: "center", gap: 8,
+                      padding: "10px 20px", borderRadius: 12, border: "none", cursor: "pointer", fontWeight: 600, fontSize: 14,
+                      background: (selectedPage.bot_mode === 'ai' && selectedPage.is_enabled) ? "#a78bfa20" : "#1a1a2e",
+                      color: (selectedPage.bot_mode === 'ai' && selectedPage.is_enabled) ? "#a78bfa" : "#94a3b8",
+                      border: `1px solid ${(selectedPage.bot_mode === 'ai' && selectedPage.is_enabled) ? "#a78bfa" : "#2d2d5e"}`,
                       transition: "all 0.2s"
                     }}
                   >
-                    🤖 AI Assistant (Guided)
+                    🤖 AI Assistant 
+                    {(selectedPage.bot_mode === 'ai' && selectedPage.is_enabled) ? <ToggleRight size={20} /> : <ToggleLeft size={20} />}
                   </button>
                 </div>
 
