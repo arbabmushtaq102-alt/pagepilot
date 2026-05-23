@@ -242,6 +242,12 @@ export default function LiveInbox({ filterPageId }: { filterPageId?: string | nu
       setEscalatedConvIds(ids as Set<string>);
     }
 
+    const { data: disabled } = await supabase.from('bot_disabled_leads').select('customer_id, page_id');
+    if (disabled) {
+      const ids = new Set(disabled.map((d: any) => `${d.page_id}_${d.customer_id}`));
+      setDisabledLeadIds(ids as Set<string>);
+    }
+
     setAllConversations(prev => {
       const oldConvsToKeep = prev.filter(c => !successfulPageIds.has(c.pageId));
       const combined = [...oldConvsToKeep, ...fetchedConvs];

@@ -254,17 +254,21 @@ async function processWebhookLogic(body: any) {
             is_resolved: false,
           });
 
-          // Disable the bot for this customer so the human agent can take over (bot stays quiet)
-          await supabase.from('bot_disabled_leads').upsert({
-            page_id: pageId,
-            customer_id: senderId
-          }, { onConflict: "page_id,customer_id" });
+          if (botConfig?.bot_mode === 'ai') {
+            // Only disable the bot completely for AI mode. 
+            // Simple keyword bots should keep listening for the next keyword match.
+            await supabase.from('bot_disabled_leads').upsert({
+              page_id: pageId,
+              customer_id: senderId
+            }, { onConflict: "page_id,customer_id" });
 
-          console.log(`⚠️ [BOT ESCALATION] Escalated to human. Bot disabled for customer ${senderId}.`);
-          
-          if (!replyMessage && botConfig?.bot_mode === 'ai') {
-            // Use the configured fallback message ONLY for AI mode. Simple mode stays silent.
-            replyMessage = botConfig?.fallback_message || "I'm sorry, I am an automated bot and I don't know the answer to that. A human agent has been notified and will assist you shortly.";
+            console.log(`⚠️ [BOT ESCALATION] Escalated to human. Bot disabled for customer ${senderId}.`);
+            
+            if (!replyMessage) {
+              replyMessage = botConfig?.fallback_message || "I'm sorry, I am an automated bot and I don't know the answer to that. A human agent has been notified and will assist you shortly.";
+            }
+          } else {
+             console.log(`⚠️ [BOT ESCALATION] Simple bot alerted human, but bot remains ON to listen for future keywords.`);
           }
         }
 
