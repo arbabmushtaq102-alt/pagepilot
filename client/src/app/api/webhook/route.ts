@@ -263,12 +263,12 @@ async function processWebhookLogic(body: any) {
             }, { onConflict: "page_id,customer_id" });
 
             console.log(`⚠️ [BOT ESCALATION] Escalated to human. Bot disabled for customer ${senderId}.`);
-            
-            if (!replyMessage) {
-              replyMessage = botConfig?.fallback_message || "I'm sorry, I am an automated bot and I don't know the answer to that. A human agent has been notified and will assist you shortly.";
-            }
           } else {
              console.log(`⚠️ [BOT ESCALATION] Simple bot alerted human, but bot remains ON to listen for future keywords.`);
+          }
+          
+          if (!replyMessage) {
+            replyMessage = botConfig?.fallback_message || "I'm sorry, I am an automated bot and I don't know the answer to that. A human agent has been notified and will assist you shortly.";
           }
         }
 
