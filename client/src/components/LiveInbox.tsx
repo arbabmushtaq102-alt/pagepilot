@@ -465,12 +465,14 @@ export default function LiveInbox({ filterPageId }: { filterPageId?: string | nu
 
   // Filtered conversations — always keep the active/open chat visible
   const filteredConvs = allConversations.filter(c => {
+    // ✅ Filter by selected page(s) — when a single page is opened, only show that page's chats
+    const matchesPage = selectedPageIds.length === 0 || selectedPageIds.includes(c.pageId);
     const matchesSearch =
       c.customerName.toLowerCase().includes(searchQuery.toLowerCase()) ||
       c.pageName.toLowerCase().includes(searchQuery.toLowerCase()) ||
       c.labels.some(l => l.toLowerCase().includes(searchQuery.toLowerCase()));
     const matchesUnread = showUnreadOnly ? (c.unread || c.id === activeId) : true;
-    return matchesSearch && matchesUnread;
+    return matchesPage && matchesSearch && matchesUnread;
   });
 
   const unreadCount = allConversations.filter(c => c.unread).length;
