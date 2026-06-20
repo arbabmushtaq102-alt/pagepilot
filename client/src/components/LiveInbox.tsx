@@ -258,12 +258,18 @@ export default function LiveInbox({ filterPageId }: { filterPageId?: string | nu
         currentReadIds = saved ? JSON.parse(saved) : {};
       } catch { currentReadIds = {}; }
       const finalConvs = combined.map(nc => {
-        const existing = prev.find(p => p.id === nc.id);
         const readTimestamp = currentReadIds[nc.id];
         const wasRead = readTimestamp != null;
+        // ✅ Always read labels from their dedicated localStorage key (source of truth)
+        // This prevents tags from being lost due to stale cache or empty in-memory arrays
+        let labels: string[] = nc.labels;
+        try {
+          const savedLabels = localStorage.getItem(`labels_${nc.id}`);
+          if (savedLabels) labels = JSON.parse(savedLabels);
+        } catch {}
         return {
           ...nc,
-          labels: existing?.labels ?? nc.labels,
+          labels,
           unread: wasRead
             ? nc.lastMessageTimestamp > readTimestamp ? nc.unread : false
             : nc.unread,
@@ -444,7 +450,14 @@ export default function LiveInbox({ filterPageId }: { filterPageId?: string | nu
     setAllConversations(prev => prev.map(c => {
       if (c.id === activeId) {
         const newLabels = c.labels.includes(label) ? c.labels.filter(l => l !== label) : [...c.labels, label];
+        // ✅ Save to the canonical key (same format used during load at fetch time)
         localStorage.setItem(`labels_${c.id}`, JSON.stringify(newLabels));
+        // ✅ Also save under the pageId_convId format used by the dashboard analytics
+        const parts = c.id.split('_');
+        if (parts.length >= 2) {
+          const threadId = parts.slice(1).join('_');
+          localStorage.setItem(`labels_${c.pageId}_${threadId}`, JSON.stringify(newLabels));
+        }
         return { ...c, labels: newLabels };
       }
       return c;
