@@ -15,7 +15,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'OpenRouter API key missing' }, { status: 500 });
     }
 
-    let aiModel = "google/gemini-2.5-flash"; // Default fallback
+    let aiModel = "meta-llama/llama-3-8b-instruct:free"; // Default fallback
     
     if (pageId) {
       const { data: botConfig } = await supabase

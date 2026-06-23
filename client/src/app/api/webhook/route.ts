@@ -112,7 +112,7 @@ async function processWebhookLogic(body: any) {
         let needsEscalation = false;
         const botMode = botConfig?.bot_mode || 'simple';
         const aiPrompt = botConfig?.ai_prompt || '';
-        const aiModel = botConfig?.ai_model || 'google/gemini-2.5-flash';
+        const aiModel = botConfig?.ai_model || 'meta-llama/llama-3-8b-instruct:free';
 
         if (botMode === 'ai') {
           console.log(`🤖 [AI BOT] Evaluating message with model: ${aiModel}`);
