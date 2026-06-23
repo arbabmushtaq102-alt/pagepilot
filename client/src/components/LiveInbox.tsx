@@ -339,7 +339,7 @@ export default function LiveInbox({ filterPageId }: { filterPageId?: string | nu
         } catch {}
       }));
       if (anyNew) fetchAllConversations(true);
-    }, 10000);
+    }, 5000);
     return () => clearInterval(fastInterval);
   }, [isAutoSyncEnabled, selectedPageIds]);
 
