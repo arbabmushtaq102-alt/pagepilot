@@ -5,7 +5,7 @@ import { Check, CheckCheck, Send, Plus, X, User as UserIcon, RefreshCw, AlertTri
 import { motion, AnimatePresence } from "framer-motion";
 import { createClient } from "@/utils/supabase/client";
 
-type Message = { id: string; sender: "customer" | "page"; text: string; time: string; isBot?: boolean; };
+type Message = { id: string; sender: "customer" | "page"; text: string; time: string; isBot?: boolean; timestamp?: number; };
 
 type Conversation = {
   id: string;
