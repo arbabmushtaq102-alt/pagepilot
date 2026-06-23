@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { CheckCircle, Trash2, Key, Calendar, ShieldCheck, Clock, LogOut, RefreshCw, Moon, Sun } from "lucide-react";
+import { CheckCircle, Trash2, Key, Calendar, ShieldCheck, Clock, LogOut, RefreshCw, Moon, Sun, User, Lock } from "lucide-react";
 import { createClient } from "@/utils/supabase/client";
 
 // ✅ ONE single App ID for ALL users — exactly like Hootsuite / PageInteract
@@ -15,6 +15,9 @@ export default function SettingsPage() {
   const [daysRemaining, setDaysRemaining] = useState<number>(0);
   const [isConnecting, setIsConnecting] = useState(false);
   const [theme, setTheme] = useState<'light' | 'dark'>('dark');
+  const [userEmail, setUserEmail] = useState<string>("");
+  const [newPassword, setNewPassword] = useState("");
+  const [isUpdatingPassword, setIsUpdatingPassword] = useState(false);
   const supabase = createClient();
 
   useEffect(() => {
@@ -80,10 +83,11 @@ export default function SettingsPage() {
   };
 
   useEffect(() => {
-    // Fetch License
+    // Fetch License & User
     const fetchLicense = async () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (user) {
+        setUserEmail(user.email || "");
         const { data } = await supabase.from('licenses').select('*').eq('user_id', user.id).single();
         if (data) {
           setLicense(data);
@@ -205,6 +209,23 @@ export default function SettingsPage() {
     const { data: { user } } = await supabase.auth.getUser();
     if (user) await supabase.from('facebook_connections').update({ connected_pages: updated, updated_at: new Date().toISOString() }).eq('user_id', user.id);
     localStorage.setItem('meta_connected_pages', JSON.stringify(updated));
+  };
+
+  const handleUpdatePassword = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newPassword || newPassword.length < 6) {
+      alert("Password must be at least 6 characters.");
+      return;
+    }
+    setIsUpdatingPassword(true);
+    const { error } = await supabase.auth.updateUser({ password: newPassword });
+    setIsUpdatingPassword(false);
+    if (error) {
+      alert(`Error updating password: ${error.message}`);
+    } else {
+      alert("Password updated successfully!");
+      setNewPassword("");
+    }
   };
 
   const isConnected = !!fbUser;
@@ -429,64 +450,101 @@ export default function SettingsPage() {
         </label>
       </div>
 
+      {/* Account Settings */}
+      <div className="glass rounded-2xl p-6 border border-border/50">
+        <h3 className="text-lg font-semibold mb-4">Account & Security</h3>
+        
+        <div className="mb-6 flex items-center gap-3 p-4 bg-surface rounded-xl border border-border">
+          <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary">
+            <User className="w-5 h-5" />
+          </div>
+          <div>
+            <p className="text-sm text-textMuted">Logged in as</p>
+            <p className="font-semibold text-textMain">{userEmail || "Loading..."}</p>
+          </div>
+        </div>
+
+        <form onSubmit={handleUpdatePassword} className="space-y-3">
+          <label className="text-sm font-medium text-textMain flex items-center gap-2">
+            <Lock className="w-4 h-4" /> Change Password
+          </label>
+          <div className="flex flex-col sm:flex-row gap-3">
+            <input
+              type="password"
+              placeholder="Enter new password (min 6 chars)"
+              value={newPassword}
+              onChange={(e) => setNewPassword(e.target.value)}
+              className="flex-1 bg-surface border border-border rounded-xl px-4 py-2.5 text-textMain placeholder:text-textMuted focus:outline-none focus:ring-2 focus:ring-primary/50"
+            />
+            <button
+              type="submit"
+              disabled={isUpdatingPassword || newPassword.length < 6}
+              className="bg-primary hover:bg-primaryHover disabled:opacity-50 disabled:cursor-not-allowed text-white px-6 py-2.5 rounded-xl font-medium transition-all"
+            >
+              {isUpdatingPassword ? "Updating..." : "Update Password"}
+            </button>
+          </div>
+        </form>
+      </div>
+
       {/* Customer Support Section */}
       <div className="glass rounded-2xl p-8 border border-blue-500/20 shadow-[0_0_30px_rgba(59,130,246,0.1)] relative overflow-hidden">
         <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-500 via-purple-500 to-emerald-500" />
         <h3 className="text-2xl font-extrabold mb-2 bg-gradient-to-r from-blue-400 to-purple-500 text-transparent bg-clip-text">Customer Support</h3>
-        <p className="text-lg text-gray-300 font-medium mb-8">Need help or want to purchase a license? Reach out to our support team.</p>
+        <p className="text-lg text-textMuted font-medium mb-8">Need help or want to purchase a license? Reach out to our support team.</p>
         
         <div className="flex flex-col md:flex-row gap-4 mb-8">
-          <div className="flex-1 bg-white/5 border border-white/10 p-5 rounded-2xl flex items-center gap-4 shadow-lg hover:border-white/20 transition-all">
-            <div className="w-12 h-12 rounded-full bg-blue-500/20 flex items-center justify-center text-blue-400 shadow-[0_0_10px_rgba(59,130,246,0.2)]">
+          <div className="flex-1 bg-surface border border-border p-5 rounded-2xl flex items-center gap-4 shadow-lg hover:border-primary/20 transition-all">
+            <div className="w-12 h-12 rounded-full bg-blue-500/10 flex items-center justify-center text-blue-500 shadow-[0_0_10px_rgba(59,130,246,0.1)]">
               <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
             </div>
             <div>
-              <p className="text-sm text-gray-400 font-medium">Phone</p>
-              <p className="font-bold text-white text-lg tracking-wide">0318 0716526</p>
+              <p className="text-sm text-textMuted font-medium">Phone</p>
+              <p className="font-bold text-textMain text-lg tracking-wide">0318 0716526</p>
             </div>
           </div>
-          <div className="flex-1 bg-white/5 border border-white/10 p-5 rounded-2xl flex items-center gap-4 shadow-lg hover:border-white/20 transition-all">
-            <div className="w-12 h-12 rounded-full bg-green-500/20 flex items-center justify-center text-green-400 shadow-[0_0_10px_rgba(34,197,94,0.2)]">
+          <div className="flex-1 bg-surface border border-border p-5 rounded-2xl flex items-center gap-4 shadow-lg hover:border-green-500/20 transition-all">
+            <div className="w-12 h-12 rounded-full bg-green-500/10 flex items-center justify-center text-green-500 shadow-[0_0_10px_rgba(34,197,94,0.1)]">
               <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
             </div>
             <div>
-              <p className="text-sm text-gray-400 font-medium">WhatsApp</p>
-              <p className="font-bold text-white text-lg tracking-wide">+92 318 0716526</p>
+              <p className="text-sm text-textMuted font-medium">WhatsApp</p>
+              <p className="font-bold text-textMain text-lg tracking-wide">+92 318 0716526</p>
             </div>
           </div>
-          <div className="flex-1 bg-white/5 border border-white/10 p-5 rounded-2xl flex items-center gap-4 shadow-lg hover:border-white/20 transition-all">
-            <div className="w-12 h-12 rounded-full bg-purple-500/20 flex items-center justify-center text-purple-400 shadow-[0_0_10px_rgba(168,85,247,0.2)]">
+          <div className="flex-1 bg-surface border border-border p-5 rounded-2xl flex items-center gap-4 shadow-lg hover:border-purple-500/20 transition-all">
+            <div className="w-12 h-12 rounded-full bg-purple-500/10 flex items-center justify-center text-purple-500 shadow-[0_0_10px_rgba(168,85,247,0.1)]">
               <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
             </div>
             <div>
-              <p className="text-sm text-gray-400 font-medium">Email</p>
-              <p className="font-bold text-white text-base tracking-wide">nexopaysolution@gmail.com</p>
+              <p className="text-sm text-textMuted font-medium">Email</p>
+              <p className="font-bold text-textMain text-base tracking-wide">nexopaysolution@gmail.com</p>
             </div>
           </div>
         </div>
 
-        <h4 className="text-xl font-bold mb-4 text-white">License Pricing Plans</h4>
+        <h4 className="text-xl font-bold mb-4 text-textMain">License Pricing Plans</h4>
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-          <div className="bg-gradient-to-br from-gray-800 to-gray-900 border border-gray-700 p-5 rounded-2xl hover:border-gray-500 transition-all shadow-lg">
-            <div className="text-sm text-gray-300 mb-1 font-medium">Starter Plan</div>
-            <div className="font-extrabold text-2xl mb-2 text-white">$25</div>
-            <div className="text-xs text-gray-300 font-bold bg-gray-700 inline-block px-2 py-1 rounded-md">3 Months</div>
+          <div className="bg-surface border border-border p-5 rounded-2xl hover:border-textMuted transition-all shadow-lg">
+            <div className="text-sm text-textMuted mb-1 font-medium">Starter Plan</div>
+            <div className="font-extrabold text-2xl mb-2 text-textMain">$25</div>
+            <div className="text-xs text-textMain font-bold bg-border inline-block px-2 py-1 rounded-md">3 Months</div>
           </div>
-          <div className="bg-gradient-to-br from-blue-600 to-blue-900 border border-blue-400 p-5 rounded-2xl relative overflow-hidden shadow-[0_0_20px_rgba(59,130,246,0.3)]">
-            <div className="absolute top-0 right-0 bg-white text-blue-900 text-[10px] font-extrabold px-3 py-1 rounded-bl-xl shadow-lg">POPULAR</div>
-            <div className="text-sm text-blue-100 mb-1 font-medium">Popular Plan</div>
-            <div className="font-extrabold text-2xl mb-2 text-white">$45</div>
-            <div className="text-xs text-white font-bold bg-blue-500/50 inline-block px-2 py-1 rounded-md">6 Months</div>
+          <div className="bg-primary/5 border border-primary/30 p-5 rounded-2xl relative overflow-hidden shadow-[0_0_20px_rgba(59,130,246,0.1)]">
+            <div className="absolute top-0 right-0 bg-primary text-white text-[10px] font-extrabold px-3 py-1 rounded-bl-xl shadow-lg">POPULAR</div>
+            <div className="text-sm text-primary mb-1 font-medium">Popular Plan</div>
+            <div className="font-extrabold text-2xl mb-2 text-primary">$45</div>
+            <div className="text-xs text-white font-bold bg-primary inline-block px-2 py-1 rounded-md">6 Months</div>
           </div>
-          <div className="bg-gradient-to-br from-purple-800 to-purple-950 border border-purple-600 p-5 rounded-2xl hover:border-purple-400 transition-all shadow-[0_0_15px_rgba(168,85,247,0.2)]">
-            <div className="text-sm text-purple-200 mb-1 font-medium">Pro Plan</div>
-            <div className="font-extrabold text-2xl mb-2 text-white">$60</div>
-            <div className="text-xs text-white font-bold bg-purple-600/50 inline-block px-2 py-1 rounded-md">9 Months</div>
+          <div className="bg-secondary/5 border border-secondary/30 p-5 rounded-2xl hover:border-secondary/50 transition-all shadow-[0_0_15px_rgba(168,85,247,0.1)]">
+            <div className="text-sm text-secondary mb-1 font-medium">Pro Plan</div>
+            <div className="font-extrabold text-2xl mb-2 text-secondary">$60</div>
+            <div className="text-xs text-white font-bold bg-secondary inline-block px-2 py-1 rounded-md">9 Months</div>
           </div>
-          <div className="bg-gradient-to-br from-emerald-800 to-emerald-950 border border-emerald-600 p-5 rounded-2xl hover:border-emerald-400 transition-all shadow-[0_0_15px_rgba(16,185,129,0.2)]">
-            <div className="text-sm text-emerald-200 mb-1 font-medium">Ultimate Plan</div>
-            <div className="font-extrabold text-2xl mb-2 text-white">$90</div>
-            <div className="text-xs text-white font-bold bg-emerald-600/50 inline-block px-2 py-1 rounded-md">12 Months</div>
+          <div className="bg-emerald-500/5 border border-emerald-500/30 p-5 rounded-2xl hover:border-emerald-500/50 transition-all shadow-[0_0_15px_rgba(16,185,129,0.1)]">
+            <div className="text-sm text-emerald-500 mb-1 font-medium">Ultimate Plan</div>
+            <div className="font-extrabold text-2xl mb-2 text-emerald-500">$90</div>
+            <div className="text-xs text-white font-bold bg-emerald-500 inline-block px-2 py-1 rounded-md">12 Months</div>
           </div>
         </div>
       </div>
