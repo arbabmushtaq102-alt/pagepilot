@@ -64,8 +64,8 @@ export default function CampaignsPage() {
     },
     {
       value: "ACCOUNT_UPDATE",
-      label: "Account Update",
-      description: "Notify customers about account changes, payment issues, or settings",
+      label: "Utility",
+      description: "Send utility updates to your audience",
       color: "from-blue-500 to-indigo-500",
     },
     {
