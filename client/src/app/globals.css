@@ -10,7 +10,7 @@
     --primary: #4f46e5;
     --primary-hover: #6366f1;
     --secondary: #a855f7;
-    --border: rgba(0, 0, 0, 0.1);
+    --border: #000000;
     --text-main: #0f172a;
     --text-muted: #64748b;
   }
