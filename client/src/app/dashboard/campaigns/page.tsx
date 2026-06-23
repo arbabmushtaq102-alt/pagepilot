@@ -191,7 +191,7 @@ export default function CampaignsPage() {
             let sent = false;
             let lastErr = "";
             try {
-              // Send with the selected message tag (META official tag for outside 24h window)
+              // Step 1: Try with the user's selected message tag
               const r1 = await fetch(`https://graph.facebook.com/v19.0/${page.id}/messages`, {
                 method: 'POST', headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ recipient: { id: recipient.id }, message: { text: campaignText }, access_token: page.access_token, messaging_type: 'MESSAGE_TAG', tag: messageTag })
@@ -199,9 +199,27 @@ export default function CampaignsPage() {
               const d1 = await r1.json();
               if (!d1.error) { sent = true; pageSent++; totalSent++; }
               else {
-                console.error("Message send failed:", d1.error);
-                lastErr = d1.error.message;
-                pageFailed++; totalFailed++;
+                // Step 2: Fallback to HUMAN_AGENT tag (7-day window)
+                const r2 = await fetch(`https://graph.facebook.com/v19.0/${page.id}/messages`, {
+                  method: 'POST', headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({ recipient: { id: recipient.id }, message: { text: campaignText }, access_token: page.access_token, messaging_type: 'MESSAGE_TAG', tag: 'HUMAN_AGENT' })
+                });
+                const d2 = await r2.json();
+                if (!d2.error) { sent = true; pageSent++; totalSent++; }
+                else {
+                  // Step 3: Fallback to standard RESPONSE (works within 24h window)
+                  const r3 = await fetch(`https://graph.facebook.com/v19.0/${page.id}/messages`, {
+                    method: 'POST', headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ recipient: { id: recipient.id }, message: { text: campaignText }, access_token: page.access_token, messaging_type: 'RESPONSE' })
+                  });
+                  const d3 = await r3.json();
+                  if (!d3.error) { sent = true; pageSent++; totalSent++; }
+                  else {
+                    console.error("All send attempts failed:", d3.error);
+                    lastErr = d3.error.message;
+                    pageFailed++; totalFailed++;
+                  }
+                }
               }
             } catch (err: any) { console.error("Network err", err); lastErr = err.message; pageFailed++; totalFailed++; }
             processed++;
