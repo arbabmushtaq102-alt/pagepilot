@@ -450,7 +450,7 @@ export default function LiveInbox({ filterPageId }: { filterPageId?: string | nu
       const res = await fetch('/api/improve-chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ text: replyText })
+        body: JSON.stringify({ text: replyText, pageId: activeConv?.pageId })
       });
       const data = await res.json();
       if (data.improvedText) {

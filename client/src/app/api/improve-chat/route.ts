@@ -1,13 +1,32 @@
 import { NextResponse } from 'next/server';
+import { createClient } from '@supabase/supabase-js';
+
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
+const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '';
+const supabase = createClient(supabaseUrl, supabaseKey);
 
 export async function POST(request: Request) {
   try {
-    const { text } = await request.json();
+    const { text, pageId } = await request.json();
     if (!text) return NextResponse.json({ error: 'Text is required' }, { status: 400 });
 
     const openRouterApiKey = process.env.OPENROUTER_API_KEY;
     if (!openRouterApiKey) {
       return NextResponse.json({ error: 'OpenRouter API key missing' }, { status: 500 });
+    }
+
+    let aiModel = "google/gemini-2.5-flash"; // Default fallback
+    
+    if (pageId) {
+      const { data: botConfig } = await supabase
+        .from('bot_configs')
+        .select('ai_model')
+        .eq('page_id', pageId)
+        .single();
+        
+      if (botConfig?.ai_model) {
+        aiModel = botConfig.ai_model;
+      }
     }
 
     const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
@@ -19,7 +38,7 @@ export async function POST(request: Request) {
         "X-Title": "PagePilot CRM Bot"
       },
       body: JSON.stringify({
-        model: "google/gemini-2.5-flash",
+        model: aiModel,
         max_tokens: 500,
         messages: [
           {
