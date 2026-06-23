@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { Check, CheckCheck, Send, Plus, X, User as UserIcon, RefreshCw, AlertTriangle, Search, Filter, Smile, Image as ImageIcon, Bot, ToggleLeft, ToggleRight } from "lucide-react";
+import { Check, CheckCheck, Send, Plus, X, User as UserIcon, RefreshCw, AlertTriangle, Search, Filter, Smile, Image as ImageIcon, Bot, ToggleLeft, ToggleRight, Pin, PinOff } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { createClient } from "@/utils/supabase/client";
 
@@ -68,7 +68,14 @@ export default function LiveInbox({ filterPageId }: { filterPageId?: string | nu
   const [showUnreadOnly, setShowUnreadOnly] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [isAutoSyncEnabled, setIsAutoSyncEnabled] = useState(true);
-  const syncInterval = 5000; // Always 5s - no user control needed
+  const syncInterval = 5000;
+  // Pinned chat IDs - max 7, persisted in localStorage
+  const [pinnedIds, setPinnedIds] = useState<Set<string>>(() => {
+    try {
+      const saved = localStorage.getItem('meta_pinned_conv_ids');
+      return saved ? new Set(JSON.parse(saved)) : new Set();
+    } catch { return new Set(); }
+  });
   const [isSyncing, setIsSyncing] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [loadingPages, setLoadingPages] = useState<string[]>([]);
@@ -490,19 +497,44 @@ export default function LiveInbox({ filterPageId }: { filterPageId?: string | nu
     } catch { alert("Network error. Could not reach Facebook."); }
   };
 
+  // Toggle pin - max 7 pinned chats
+  const togglePin = (convId: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    setPinnedIds(prev => {
+      const next = new Set(prev);
+      if (next.has(convId)) {
+        next.delete(convId);
+      } else {
+        if (next.size >= 7) {
+          alert('You can only pin up to 7 chats.');
+          return prev;
+        }
+        next.add(convId);
+      }
+      localStorage.setItem('meta_pinned_conv_ids', JSON.stringify([...next]));
+      return next;
+    });
+  };
+
   const toggleLabel = (label: string) => {
     if (!activeId) return;
     setAllConversations(prev => prev.map(c => {
       if (c.id === activeId) {
         const newLabels = c.labels.includes(label) ? c.labels.filter(l => l !== label) : [...c.labels, label];
-        // ✅ Save to the canonical key (same format used during load at fetch time)
+        // Save to localStorage (canonical key)
         localStorage.setItem(`labels_${c.id}`, JSON.stringify(newLabels));
-        // ✅ Also save under the pageId_convId format used by the dashboard analytics
         const parts = c.id.split('_');
         if (parts.length >= 2) {
           const threadId = parts.slice(1).join('_');
           localStorage.setItem(`labels_${c.pageId}_${threadId}`, JSON.stringify(newLabels));
         }
+        // Also save to Supabase for cross-device persistence
+        supabase.from('conversation_labels').upsert({
+          conversation_id: c.id,
+          page_id: c.pageId,
+          customer_id: c.customerId,
+          labels: newLabels
+        }, { onConflict: 'conversation_id' }).then(() => {});
         return { ...c, labels: newLabels };
       }
       return c;
@@ -523,7 +555,6 @@ export default function LiveInbox({ filterPageId }: { filterPageId?: string | nu
 
   // Filtered conversations — always keep the active/open chat visible
   const filteredConvs = allConversations.filter(c => {
-    // ✅ Filter by selected page(s) — when a single page is opened, only show that page's chats
     const matchesPage = selectedPageIds.length === 0 || selectedPageIds.includes(c.pageId);
     const matchesSearch =
       c.customerName.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -531,6 +562,12 @@ export default function LiveInbox({ filterPageId }: { filterPageId?: string | nu
       c.labels.some(l => l.toLowerCase().includes(searchQuery.toLowerCase()));
     const matchesUnread = showUnreadOnly ? (c.unread || c.id === activeId) : true;
     return matchesPage && matchesSearch && matchesUnread;
+  }).sort((a, b) => {
+    // Pinned chats always appear first
+    const aPinned = pinnedIds.has(a.id) ? 1 : 0;
+    const bPinned = pinnedIds.has(b.id) ? 1 : 0;
+    if (bPinned !== aPinned) return bPinned - aPinned;
+    return b.lastMessageTimestamp - a.lastMessageTimestamp;
   });
 
   const unreadCount = allConversations.filter(c => c.unread).length;
@@ -743,19 +780,39 @@ export default function LiveInbox({ filterPageId }: { filterPageId?: string | nu
             ) : (
               <AnimatePresence>
                 {filteredConvs.map((conv, idx) => {
+                  const isPinned = pinnedIds.has(conv.id);
+                  const prevConv = filteredConvs[idx - 1];
+                  const prevPinned = prevConv ? pinnedIds.has(prevConv.id) : false;
+                  const showPinnedHeader = isPinned && idx === 0;
+                  const showUnpinnedHeader = !isPinned && (idx === 0 || prevPinned);
                   const pageIdx = pages.findIndex(p => p.id === conv.pageId);
                   const color = PAGE_COLORS[pageIdx % PAGE_COLORS.length];
                   return (
+                    <div key={conv.id}>
+                      {showPinnedHeader && (
+                        <div className="flex items-center gap-1.5 px-1 py-1 mb-1">
+                          <Pin className="w-3 h-3 text-yellow-400" />
+                          <span className="text-[10px] font-semibold text-yellow-400 uppercase tracking-wider">Pinned</span>
+                        </div>
+                      )}
+                      {showUnpinnedHeader && pinnedIds.size > 0 && (
+                        <div className="flex items-center gap-1.5 px-1 py-1 mb-1 mt-2">
+                          <div className="flex-1 h-px bg-border" />
+                          <span className="text-[10px] text-textMuted uppercase tracking-wider">All Chats</span>
+                          <div className="flex-1 h-px bg-border" />
+                        </div>
+                      )}
                     <motion.div
-                      key={conv.id}
                       initial={{ opacity: 0, x: -10 }}
                       animate={{ opacity: 1, x: 0 }}
                       onClick={() => handleOpenConv(conv.id)}
-                      className={`p-3 rounded-xl cursor-pointer transition-all border relative overflow-hidden ${
+                      className={`group p-3 rounded-xl cursor-pointer transition-all border relative overflow-hidden ${
                         activeId === conv.id
                           ? "bg-surface border-border"
                           : escalatedConvIds.has(`${conv.pageId}_${conv.customerId}`)
                           ? "bg-[#1a0f0f] border-l-4 border-l-orange-500 border-t-border border-r-border border-b-border shadow-md shadow-orange-500/10"
+                          : isPinned
+                          ? "bg-[#1a1a0f] border-l-4 border-l-yellow-400 border-t-border border-r-border border-b-border shadow-md shadow-yellow-400/10"
                           : conv.unread
                           ? "bg-[#1a1a2e] border-l-4 border-l-red-500 border-t-border border-r-border border-b-border shadow-md shadow-red-500/10"
                           : "hover:bg-surface border-transparent"
@@ -799,6 +856,14 @@ export default function LiveInbox({ filterPageId }: { filterPageId?: string | nu
                               {conv.unread && activeId !== conv.id && !escalatedConvIds.has(`${conv.pageId}_${conv.customerId}`) && (
                                 <span className="px-1.5 py-0.5 rounded-full bg-red-500 text-white text-[9px] font-bold">NEW</span>
                               )}
+                              {/* Pin button */}
+                              <button
+                                onClick={(e) => togglePin(conv.id, e)}
+                                title={isPinned ? 'Unpin chat' : 'Pin chat'}
+                                className={`p-0.5 rounded transition-colors ${isPinned ? 'text-yellow-400 hover:text-yellow-300' : 'text-textMuted hover:text-yellow-400 opacity-0 group-hover:opacity-100'}`}
+                              >
+                                {isPinned ? <Pin className="w-3 h-3" /> : <Pin className="w-3 h-3" />}
+                              </button>
                               {!conv.unread && conv.replied && (
                                 <CheckCheck className="w-3 h-3 text-primary" />
                               )}
@@ -828,6 +893,7 @@ export default function LiveInbox({ filterPageId }: { filterPageId?: string | nu
                         </div>
                       </div>
                     </motion.div>
+                    </div>
                   );
                 })}
               </AnimatePresence>
