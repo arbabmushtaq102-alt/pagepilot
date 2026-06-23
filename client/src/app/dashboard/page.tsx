@@ -319,7 +319,7 @@ export default function Dashboard() {
                       onClick={() => togglePageSelection(page.id)}
                       className={`flex items-center justify-between p-3 rounded-xl border cursor-pointer transition-all ${isSelected ? 'border-primary bg-primary/10' : 'border-border bg-surface hover:bg-surfaceHover'}`}
                     >
-                      <span className={`font-medium text-sm ${isSelected ? 'text-white' : 'text-textMuted'}`}>{page.name}</span>
+                      <span className={`font-medium text-sm ${isSelected ? 'text-primary' : 'text-textMuted'}`}>{page.name}</span>
                       <div className={`w-4 h-4 rounded-md flex items-center justify-center border ${isSelected ? 'bg-primary border-primary' : 'border-textMuted'}`}>
                         {isSelected && <CheckCircle2 className="w-3 h-3 text-white" />}
                       </div>
@@ -435,7 +435,7 @@ export default function Dashboard() {
                               </div>
                               <div className="flex items-center gap-4">
                                 <span className="text-textMuted/60 text-xs">{pct}%</span>
-                                <span className="font-bold text-white min-w-[20px] text-right">{count}</span>
+                                <span className="font-bold text-textMain min-w-[20px] text-right">{count}</span>
                               </div>
                             </div>
                           );
@@ -517,7 +517,7 @@ function StatCard({ title, value, icon, glowColor }: { title: string, value: str
         <div>
           <p className="text-sm text-textMuted font-semibold uppercase tracking-wider mb-1">{title}</p>
           <div className="flex items-baseline gap-2">
-            <h3 className="text-4xl font-black text-white tracking-tight drop-shadow-md">{value}</h3>
+            <h3 className="text-4xl font-black text-textMain tracking-tight drop-shadow-md">{value}</h3>
           </div>
         </div>
       </div>

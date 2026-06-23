@@ -73,7 +73,7 @@ export default function InboxPage() {
                 <div className="w-16 h-16 rounded-full bg-surface border border-border flex items-center justify-center mb-4">
                   <AlertTriangle className="w-7 h-7 text-yellow-400" />
                 </div>
-                <h3 className="text-lg font-semibold text-white mb-2">No Facebook Pages Connected</h3>
+                <h3 className="text-lg font-semibold text-textMain mb-2">No Facebook Pages Connected</h3>
                 <p className="text-sm mb-4">Connect your pages in Settings to view your real inbox.</p>
                 <a href="/dashboard/settings" className="inline-flex items-center gap-2 px-4 py-2 bg-primary hover:bg-primaryHover text-white rounded-lg text-sm font-medium transition-colors">
                   Go to Settings →
@@ -97,7 +97,7 @@ export default function InboxPage() {
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-3 mb-1">
-                        <h3 className="text-xl font-bold text-white">All Pages — Unified Inbox</h3>
+                        <h3 className="text-xl font-bold text-textMain">All Pages — Unified Inbox</h3>
                         <span className="px-2.5 py-0.5 bg-primary/20 text-primary border border-primary/30 rounded-full text-xs font-semibold shrink-0">
                           {pages.length} Pages
                         </span>
@@ -141,7 +141,7 @@ export default function InboxPage() {
                       </div>
                     </div>
                     <div className="relative z-10">
-                      <h3 className="text-lg font-semibold text-textMain group-hover:text-white transition-colors">{page.name}</h3>
+                      <h3 className="text-lg font-semibold text-textMain group-hover:text-primary transition-colors">{page.name}</h3>
                       <p className="text-xs text-textMuted mt-1">Page ID: {page.id}</p>
                     </div>
                   </motion.div>
