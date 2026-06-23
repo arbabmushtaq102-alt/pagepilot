@@ -54,16 +54,7 @@ async function processWebhookLogic(body: any) {
 
         console.log(`\n📩 [BOT] From: ${senderId} | Page: ${pageId} | Msg: "${messageText}"`);
 
-        // --- 0. Broadcast Sync Ping with Payload for INSTANT UI Update ---
-        try {
-          await supabase.from('inbox_sync_pings').insert({ 
-            page_id: pageId,
-            payload: { senderId, text: messageText, timestamp: Date.now() }
-          });
-        } catch {
-          // Fallback - insert without payload
-          try { await supabase.from('inbox_sync_pings').insert({ page_id: pageId }); } catch {}
-        }
+        // Sync ping is now sent in the POST handler instantly before background logic runs
 
         // --- 1. Fetch bot config and disabled leads for this page ---
         const { data: botConfig } = await supabase
@@ -353,7 +344,26 @@ export async function POST(request: Request) {
     const body = await request.json();
 
     if (body.object === 'page') {
-      // Execute the heavy AI logic in the background using waitUntil so Facebook doesn't timeout!
+      // ⚡ INSTANT SYNC PING - Fire BEFORE background AI logic so UI updates immediately!
+      // The bot AI can take 30-60s, we don't want to wait for it before showing the message.
+      try {
+        for (const entry of body.entry || []) {
+          const webhookEvent = entry.messaging?.[0];
+          if (webhookEvent?.message && !webhookEvent.message.is_echo) {
+            const senderId = webhookEvent.sender.id;
+            const pageId = webhookEvent.recipient.id;
+            const messageText = webhookEvent.message.text?.toLowerCase()?.trim();
+            if (pageId && messageText) {
+              await supabase.from('inbox_sync_pings').insert({
+                page_id: pageId,
+                payload: { senderId, text: messageText, timestamp: Date.now() }
+              });
+            }
+          }
+        }
+      } catch { /* Silent fail - don't block the response */ }
+
+      // Execute the heavy AI/bot logic in the background
       waitUntil(processWebhookLogic(body));
       
       // Tell Facebook we got it immediately! Must be < 20s.
