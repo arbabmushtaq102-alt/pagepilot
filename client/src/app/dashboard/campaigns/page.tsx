@@ -6,7 +6,7 @@ import { io as socketIO } from "socket.io-client";
 import axios from "axios";
 import { 
   Send, Users, BarChart3, CheckCircle2, AlertTriangle,
-  Clock, Plus, Search, Calendar, Copy, MoreVertical, UploadCloud, RefreshCw
+  Clock, Plus, Search, Calendar, Copy, MoreVertical, UploadCloud, RefreshCw, Tag
 } from "lucide-react";
 
 // Real pages loaded from localStorage after Facebook login
@@ -53,6 +53,28 @@ export default function CampaignsPage() {
   const [scheduleDate, setScheduleDate] = useState("");
   const [isLaunching, setIsLaunching] = useState(false);
   const [launchSuccess, setLaunchSuccess] = useState(false);
+  const [messageTag, setMessageTag] = useState<string>("");
+
+  const MESSAGE_TAGS = [
+    {
+      value: "POST_PURCHASE_UPDATE",
+      label: "Post Purchase Update",
+      description: "Notify customers about order status, shipping updates, or receipts",
+      color: "from-emerald-500 to-teal-500",
+    },
+    {
+      value: "ACCOUNT_UPDATE",
+      label: "Account Update",
+      description: "Notify customers about account changes, payment issues, or settings",
+      color: "from-blue-500 to-indigo-500",
+    },
+    {
+      value: "CONFIRMED_EVENT_UPDATE",
+      label: "Customer Feedback",
+      description: "Send feedback requests, surveys, or event reminders to customers",
+      color: "from-orange-500 to-amber-500",
+    },
+  ];
 
   const togglePageSelection = (id: string) => {
     setSelectedPages(prev =>
@@ -96,7 +118,7 @@ export default function CampaignsPage() {
   }, [selectedPages, pages]);
 
   const handleLaunch = async () => {
-    if (selectedPages.length === 0 || !campaignText) return;
+    if (selectedPages.length === 0 || !campaignText || !messageTag) return;
 
     setSendResults(null);
     setSendProgress({ phase: 'connecting', processed: 0, total: totalLeads, sent: 0, failed: 0, page: '' });
@@ -137,7 +159,8 @@ export default function CampaignsPage() {
       const res = await axios.post('http://localhost:5000/api/campaigns/send-bulk', {
         pages: selectedPageObjects,
         message: campaignText,
-        socketId
+        socketId,
+        messageTag
       });
       socket.disconnect();
       const { totalSent, totalFailed, results } = res.data;
@@ -146,7 +169,7 @@ export default function CampaignsPage() {
       setIsLaunching(false);
       setLaunchSuccess(true);
       saveAndReset(totalSent, results);
-      setTimeout(() => { setLaunchSuccess(false); setSendResults(null); setActiveTab("dashboard"); setSelectedPages([]); setCampaignText(""); setSendType("immediate"); }, 8000);
+      setTimeout(() => { setLaunchSuccess(false); setSendResults(null); setActiveTab("dashboard"); setSelectedPages([]); setCampaignText(""); setSendType("immediate"); setMessageTag(""); }, 8000);
 
     } catch (err: any) {
       console.error("Backend unavailable — using direct Graph API fallback:", err);
@@ -168,25 +191,17 @@ export default function CampaignsPage() {
             let sent = false;
             let lastErr = "";
             try {
-              // Try RESPONSE first (works within 24h window)
+              // Send with the selected message tag (META official tag for outside 24h window)
               const r1 = await fetch(`https://graph.facebook.com/v19.0/${page.id}/messages`, {
                 method: 'POST', headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ recipient: { id: recipient.id }, message: { text: campaignText }, access_token: page.access_token, messaging_type: 'RESPONSE' })
+                body: JSON.stringify({ recipient: { id: recipient.id }, message: { text: campaignText }, access_token: page.access_token, messaging_type: 'MESSAGE_TAG', tag: messageTag })
               });
               const d1 = await r1.json();
               if (!d1.error) { sent = true; pageSent++; totalSent++; }
               else {
-                // Fallback: HUMAN_AGENT tag (extends the messaging window to exactly 7 days!)
-                const r2 = await fetch(`https://graph.facebook.com/v19.0/${page.id}/messages`, {
-                  method: 'POST', headers: { 'Content-Type': 'application/json' },
-                  body: JSON.stringify({ recipient: { id: recipient.id }, message: { text: campaignText }, access_token: page.access_token, messaging_type: 'MESSAGE_TAG', tag: 'HUMAN_AGENT' })
-                });
-                const d2 = await r2.json();
-                if (!d2.error) { sent = true; pageSent++; totalSent++; } else { 
-                  console.error("Message send failed:", d2.error);
-                  lastErr = d2.error.message;
-                  pageFailed++; totalFailed++; 
-                }
+                console.error("Message send failed:", d1.error);
+                lastErr = d1.error.message;
+                pageFailed++; totalFailed++;
               }
             } catch (err: any) { console.error("Network err", err); lastErr = err.message; pageFailed++; totalFailed++; }
             processed++;
@@ -204,7 +219,7 @@ export default function CampaignsPage() {
       setIsLaunching(false);
       setLaunchSuccess(true);
       saveAndReset(totalSent, results);
-      setTimeout(() => { setLaunchSuccess(false); setSendResults(null); setActiveTab("dashboard"); setSelectedPages([]); setCampaignText(""); setSendType("immediate"); }, 8000);
+      setTimeout(() => { setLaunchSuccess(false); setSendResults(null); setActiveTab("dashboard"); setSelectedPages([]); setCampaignText(""); setSendType("immediate"); setMessageTag(""); }, 8000);
     }
   };
 
@@ -431,6 +446,51 @@ export default function CampaignsPage() {
                   </div>
                 </div>
 
+                {/* Message Tag Selector (Mandatory) */}
+                <div className="pt-4 border-t border-border space-y-3">
+                  <h3 className="font-semibold text-sm flex items-center gap-2"><Tag className="w-4 h-4 text-violet-400" /> Message Tag <span className="text-red-400 text-xs">(Required)</span></h3>
+                  <p className="text-xs text-textMuted">Select a Meta-approved tag. Messages cannot be sent without selecting a tag.</p>
+                  <div className="space-y-2">
+                    {MESSAGE_TAGS.map(tag => {
+                      const isSelected = messageTag === tag.value;
+                      return (
+                        <div
+                          key={tag.value}
+                          onClick={() => setMessageTag(tag.value)}
+                          className={`p-3 rounded-xl border cursor-pointer transition-all ${
+                            isSelected
+                              ? 'border-primary bg-primary/10 shadow-md shadow-primary/10'
+                              : 'border-border bg-surface hover:border-primary/50 hover:bg-surface/80'
+                          }`}
+                        >
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-3">
+                              <div className={`w-8 h-8 rounded-lg bg-gradient-to-br ${tag.color} flex items-center justify-center shrink-0`}>
+                                <Tag className="w-4 h-4 text-white" />
+                              </div>
+                              <div>
+                                <p className={`font-semibold text-sm ${isSelected ? 'text-white' : 'text-textMain'}`}>{tag.label}</p>
+                                <p className="text-[11px] text-textMuted leading-tight mt-0.5">{tag.description}</p>
+                              </div>
+                            </div>
+                            <div className={`w-5 h-5 rounded-full flex items-center justify-center border-2 shrink-0 transition-all ${
+                              isSelected ? 'border-primary bg-primary' : 'border-textMuted'
+                            }`}>
+                              {isSelected && <CheckCircle2 className="w-3.5 h-3.5 text-white" />}
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                  {!messageTag && selectedPages.length > 0 && campaignText && (
+                    <div className="flex items-center gap-2 text-amber-400 text-xs p-2 bg-amber-500/10 rounded-lg border border-amber-500/20">
+                      <AlertTriangle className="w-3.5 h-3.5 shrink-0" />
+                      Please select a message tag before launching
+                    </div>
+                  )}
+                </div>
+
                 <div className="pt-4 border-t border-border space-y-2">
                   <div className="flex justify-between text-sm">
                     <span className="text-textMuted">Total Leads:</span>
@@ -448,10 +508,10 @@ export default function CampaignsPage() {
 
                 <button 
                   onClick={handleLaunch}
-                  disabled={selectedPages.length === 0 || !campaignText || isLaunching || launchSuccess}
+                  disabled={selectedPages.length === 0 || !campaignText || !messageTag || isLaunching || launchSuccess}
                   className={`w-full py-4 rounded-xl font-bold text-lg transition-all shadow-lg flex items-center justify-center gap-2 ${
                     launchSuccess ? 'bg-green-500 text-white' 
-                    : selectedPages.length > 0 && campaignText 
+                    : selectedPages.length > 0 && campaignText && messageTag
                       ? 'bg-gradient-to-r from-primary to-secondary hover:opacity-90 text-white' 
                       : 'bg-surface text-textMuted cursor-not-allowed border border-border'
                   }`}
