@@ -175,7 +175,7 @@ async function processWebhookLogic(body: any) {
                 headers: {
                   "Content-Type": "application/json",
                   "Authorization": `Bearer ${openRouterKey}`,
-                  "HTTP-Referer": "https://pagepilot-crm.com", // Optional, metadata
+                  "HTTP-Referer": "https://pagespilot.online", // Optional, metadata
                   "X-Title": "PagePilot CRM Bot"
                 },
                 body: JSON.stringify({
