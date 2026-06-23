@@ -810,11 +810,11 @@ export default function LiveInbox({ filterPageId }: { filterPageId?: string | nu
                         activeId === conv.id
                           ? "bg-surface border-border"
                           : escalatedConvIds.has(`${conv.pageId}_${conv.customerId}`)
-                          ? "bg-[#1a0f0f] border-l-4 border-l-orange-500 border-t-border border-r-border border-b-border shadow-md shadow-orange-500/10"
+                          ? "bg-orange-50 dark:bg-[#1a0f0f] border-l-4 border-l-orange-500 border-t-border border-r-border border-b-border shadow-md shadow-orange-500/10"
                           : isPinned
-                          ? "bg-[#1a1a0f] border-l-4 border-l-yellow-400 border-t-border border-r-border border-b-border shadow-md shadow-yellow-400/10"
+                          ? "bg-yellow-50 dark:bg-[#1a1a0f] border-l-4 border-l-yellow-400 border-t-border border-r-border border-b-border shadow-md shadow-yellow-400/10"
                           : conv.unread
-                          ? "bg-[#1a1a2e] border-l-4 border-l-red-500 border-t-border border-r-border border-b-border shadow-md shadow-red-500/10"
+                          ? "bg-red-50 dark:bg-[#1a1a2e] border-l-4 border-l-red-500 border-t-border border-r-border border-b-border shadow-md shadow-red-500/10"
                           : "hover:bg-surface border-transparent"
                       }`}
                     >
@@ -841,7 +841,7 @@ export default function LiveInbox({ filterPageId }: { filterPageId?: string | nu
                           <div className="flex justify-between items-start mb-0.5">
                             <span className={`text-sm truncate ${
                               conv.unread && activeId !== conv.id
-                                ? "text-white font-bold"
+                                ? "text-textMain dark:text-white font-bold"
                                 : "font-medium text-textMain"
                             }`}>
                               {conv.customerName}
@@ -877,7 +877,7 @@ export default function LiveInbox({ filterPageId }: { filterPageId?: string | nu
                           </span>
 
                           <p className={`text-xs truncate ${
-                            conv.unread && activeId !== conv.id ? "text-white font-medium" : "text-textMuted"
+                            conv.unread && activeId !== conv.id ? "text-textMain dark:text-white font-medium" : "text-textMuted"
                           }`}>
                             {conv.messages[conv.messages.length - 1]?.text || "..."}
                           </p>

@@ -77,16 +77,16 @@ function AiSettingsEditor({ selectedPage, updateAiPrompt }: { selectedPage: BotC
       
       {/* 1. Purpose */}
       <div>
-        <label style={{ fontSize: 13, fontWeight: 600, color: "#fff", display: "block", marginBottom: 8 }}>1. Bot Purpose Selection</label>
-        <p style={{ fontSize: 11, color: "#64748b", marginBottom: 12 }}>Select what type of work the AI should do.</p>
+        <label style={{ fontSize: 13, fontWeight: 600, color: "var(--text-main)", display: "block", marginBottom: 8 }}>1. Bot Purpose Selection</label>
+        <p style={{ fontSize: 11, color: "var(--text-muted)", marginBottom: 12 }}>Select what type of work the AI should do.</p>
         <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
           {purposeOptions.map(p => {
             const active = settings.purposes.includes(p);
             return (
               <button key={p} onClick={() => toggleArray('purposes', p)} style={{
                 padding: "6px 12px", borderRadius: 8, fontSize: 12, fontWeight: active ? 600 : 500,
-                background: active ? "#a78bfa" : "#0a0a15", color: active ? "#fff" : "#94a3b8",
-                border: `1px solid ${active ? "#a78bfa" : "#2d2d5e"}`, cursor: "pointer"
+                background: active ? "#a78bfa" : "var(--surface)", color: active ? "var(--text-main)" : "var(--text-muted)",
+                border: `1px solid ${active ? "#a78bfa" : "var(--border)"}`, cursor: "pointer"
               }}>
                 {active ? "☑ " : "☐ "} {p}
               </button>
@@ -97,47 +97,47 @@ function AiSettingsEditor({ selectedPage, updateAiPrompt }: { selectedPage: BotC
 
       {/* 2. SHOULD reply */}
       <div>
-        <label style={{ fontSize: 13, fontWeight: 600, color: "#fff", display: "block", marginBottom: 8 }}>2. Things AI SHOULD Reply To</label>
-        <p style={{ fontSize: 11, color: "#64748b", marginBottom: 12 }}>What exact topics should it help with? (e.g. Payment methods, deposit instructions)</p>
+        <label style={{ fontSize: 13, fontWeight: 600, color: "var(--text-main)", display: "block", marginBottom: 8 }}>2. Things AI SHOULD Reply To</label>
+        <p style={{ fontSize: 11, color: "var(--text-muted)", marginBottom: 12 }}>What exact topics should it help with? (e.g. Payment methods, deposit instructions)</p>
         <textarea
           value={settings.should_reply}
           onChange={(e) => update('should_reply', e.target.value)}
           placeholder="Help users with:&#10;- Payment methods&#10;- Deposit instructions&#10;- Casino game information"
           rows={4}
           style={{
-            width: "100%", background: "#0a0a15", border: "1px solid #2d2d5e",
-            borderRadius: 8, color: "#e2e8f0", padding: "12px", fontSize: 13, fontFamily: "inherit", resize: "vertical"
+            width: "100%", background: "var(--surface)", border: "1px solid #2d2d5e",
+            borderRadius: 8, color: "var(--text-main)", padding: "12px", fontSize: 13, fontFamily: "inherit", resize: "vertical"
           }}
         />
       </div>
 
       {/* 3. SHOULD NOT reply */}
       <div>
-        <label style={{ fontSize: 13, fontWeight: 600, color: "#fff", display: "block", marginBottom: 8 }}>3. Things AI Should NOT Reply To (Restrictions)</label>
-        <p style={{ fontSize: 11, color: "#64748b", marginBottom: 12 }}>What should the AI refuse to do? (e.g. Do not share admin links)</p>
+        <label style={{ fontSize: 13, fontWeight: 600, color: "var(--text-main)", display: "block", marginBottom: 8 }}>3. Things AI Should NOT Reply To (Restrictions)</label>
+        <p style={{ fontSize: 11, color: "var(--text-muted)", marginBottom: 12 }}>What should the AI refuse to do? (e.g. Do not share admin links)</p>
         <textarea
           value={settings.should_not_reply}
           onChange={(e) => update('should_not_reply', e.target.value)}
           placeholder="- Do not share admin links.&#10;- Do not reveal pricing without permission.&#10;- Do not provide refund promises."
           rows={3}
           style={{
-            width: "100%", background: "#0a0a15", border: "1px solid #2d2d5e",
-            borderRadius: 8, color: "#e2e8f0", padding: "12px", fontSize: 13, fontFamily: "inherit", resize: "vertical"
+            width: "100%", background: "var(--surface)", border: "1px solid #2d2d5e",
+            borderRadius: 8, color: "var(--text-main)", padding: "12px", fontSize: 13, fontFamily: "inherit", resize: "vertical"
           }}
         />
       </div>
 
       {/* 4. Tone */}
       <div>
-        <label style={{ fontSize: 13, fontWeight: 600, color: "#fff", display: "block", marginBottom: 8 }}>4. Reply Style / Tone</label>
+        <label style={{ fontSize: 13, fontWeight: 600, color: "var(--text-main)", display: "block", marginBottom: 8 }}>4. Reply Style / Tone</label>
         <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
           {toneOptions.map(t => {
             const active = settings.tones.includes(t);
             return (
               <button key={t} onClick={() => toggleArray('tones', t)} style={{
                 padding: "6px 12px", borderRadius: 8, fontSize: 12, fontWeight: active ? 600 : 500,
-                background: active ? "#3b82f6" : "#0a0a15", color: active ? "#fff" : "#94a3b8",
-                border: `1px solid ${active ? "#3b82f6" : "#2d2d5e"}`, cursor: "pointer"
+                background: active ? "#3b82f6" : "var(--surface)", color: active ? "var(--text-main)" : "var(--text-muted)",
+                border: `1px solid ${active ? "#3b82f6" : "var(--border)"}`, cursor: "pointer"
               }}>
                 {active ? "☑ " : "☐ "} {t}
               </button>
@@ -148,13 +148,13 @@ function AiSettingsEditor({ selectedPage, updateAiPrompt }: { selectedPage: BotC
 
       {/* 5. Language */}
       <div>
-        <label style={{ fontSize: 13, fontWeight: 600, color: "#fff", display: "block", marginBottom: 8 }}>5. Language Settings</label>
+        <label style={{ fontSize: 13, fontWeight: 600, color: "var(--text-main)", display: "block", marginBottom: 8 }}>5. Language Settings</label>
         <select
           value={settings.language}
           onChange={(e) => update('language', e.target.value)}
           style={{
-            width: "100%", background: "#0a0a15", border: "1px solid #2d2d5e",
-            borderRadius: 8, color: "#e2e8f0", padding: "10px 12px", fontSize: 13, fontFamily: "inherit"
+            width: "100%", background: "var(--surface)", border: "1px solid #2d2d5e",
+            borderRadius: 8, color: "var(--text-main)", padding: "10px 12px", fontSize: 13, fontFamily: "inherit"
           }}
         >
           {langOptions.map(l => <option key={l} value={l}>{l}</option>)}
@@ -163,11 +163,11 @@ function AiSettingsEditor({ selectedPage, updateAiPrompt }: { selectedPage: BotC
 
       {/* 6. Training Examples */}
       <div>
-        <label style={{ fontSize: 13, fontWeight: 600, color: "#fff", display: "block", marginBottom: 8 }}>6. Example Conversations Training</label>
-        <p style={{ fontSize: 11, color: "#64748b", marginBottom: 12 }}>Teach the AI exactly how to answer specific questions.</p>
+        <label style={{ fontSize: 13, fontWeight: 600, color: "var(--text-main)", display: "block", marginBottom: 8 }}>6. Example Conversations Training</label>
+        <p style={{ fontSize: 11, color: "var(--text-muted)", marginBottom: 12 }}>Teach the AI exactly how to answer specific questions.</p>
         <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
           {settings.training_examples.map((ex: any, i: number) => (
-            <div key={i} style={{ background: "#0a0a15", border: "1px solid #2d2d5e", borderRadius: 8, padding: 12, position: "relative" }}>
+            <div key={i} style={{ background: "var(--surface)", border: "1px solid #2d2d5e", borderRadius: 8, padding: 12, position: "relative" }}>
               <button
                 onClick={() => {
                   const newEx = [...settings.training_examples];
@@ -179,24 +179,24 @@ function AiSettingsEditor({ selectedPage, updateAiPrompt }: { selectedPage: BotC
                 ✕
               </button>
               <div style={{ marginBottom: 8 }}>
-                <span style={{ fontSize: 11, color: "#94a3b8" }}>User Says:</span>
+                <span style={{ fontSize: 11, color: "var(--text-muted)" }}>User Says:</span>
                 <input value={ex.user} onChange={(e) => {
                   const newEx = [...settings.training_examples];
                   newEx[i].user = e.target.value;
                   update('training_examples', newEx);
-                }} style={{ width: "100%", background: "transparent", borderBottom: "1px solid #2d2d5e", color: "#fff", fontSize: 12, padding: "4px 0", outline: "none" }} placeholder="How can I deposit?" />
+                }} style={{ width: "100%", background: "transparent", borderBottom: "1px solid #2d2d5e", color: "var(--text-main)", fontSize: 12, padding: "4px 0", outline: "none" }} placeholder="How can I deposit?" />
               </div>
               <div>
-                <span style={{ fontSize: 11, color: "#94a3b8" }}>AI Should Reply:</span>
+                <span style={{ fontSize: 11, color: "var(--text-muted)" }}>AI Should Reply:</span>
                 <input value={ex.ai} onChange={(e) => {
                   const newEx = [...settings.training_examples];
                   newEx[i].ai = e.target.value;
                   update('training_examples', newEx);
-                }} style={{ width: "100%", background: "transparent", borderBottom: "1px solid #2d2d5e", color: "#fff", fontSize: 12, padding: "4px 0", outline: "none" }} placeholder="You can deposit using CashApp..." />
+                }} style={{ width: "100%", background: "transparent", borderBottom: "1px solid #2d2d5e", color: "var(--text-main)", fontSize: 12, padding: "4px 0", outline: "none" }} placeholder="You can deposit using CashApp..." />
               </div>
             </div>
           ))}
-          <button onClick={() => update('training_examples', [...settings.training_examples, { user: "", ai: "" }])} style={{ padding: "8px", borderRadius: 8, background: "#1e293b", color: "#e2e8f0", border: "1px dashed #475569", cursor: "pointer", fontSize: 12 }}>
+          <button onClick={() => update('training_examples', [...settings.training_examples, { user: "", ai: "" }])} style={{ padding: "8px", borderRadius: 8, background: "var(--surface)", color: "var(--text-main)", border: "1px dashed #475569", cursor: "pointer", fontSize: 12 }}>
             + Add Example
           </button>
         </div>
@@ -434,20 +434,20 @@ export default function BotPage() {
   }
 
   return (
-    <div style={{ display: "flex", height: "calc(100vh - 60px)", background: "#0f0f1a", color: "#e2e8f0", fontFamily: "'Inter', sans-serif" }}>
+    <div style={{ display: "flex", height: "calc(100vh - 60px)", background: "var(--background)", color: "var(--text-main)", fontFamily: "'Inter', sans-serif" }}>
 
       {/* LEFT: Page List */}
-      <div style={{ width: 280, borderRight: "1px solid #1e1e3f", overflowY: "auto", background: "#0a0a15" }}>
+      <div style={{ width: 280, borderRight: "1px solid #1e1e3f", overflowY: "auto", background: "var(--surface)" }}>
         <div style={{ padding: "20px 16px 12px", borderBottom: "1px solid #1e1e3f" }}>
           <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 4 }}>
             <Bot size={20} color="#a78bfa" />
-            <span style={{ fontWeight: 700, fontSize: 16, color: "#fff" }}>Bot Manager</span>
+            <span style={{ fontWeight: 700, fontSize: 16, color: "var(--text-main)" }}>Bot Manager</span>
           </div>
-          <p style={{ fontSize: 12, color: "#64748b", margin: 0 }}>Configure auto-replies per page</p>
+          <p style={{ fontSize: 12, color: "var(--text-muted)", margin: 0 }}>Configure auto-replies per page</p>
         </div>
 
         {pages.length === 0 ? (
-          <div style={{ padding: 24, textAlign: "center", color: "#64748b" }}>
+          <div style={{ padding: 24, textAlign: "center", color: "var(--text-muted)" }}>
             <MessageSquare size={32} style={{ marginBottom: 8, opacity: 0.4 }} />
             <p style={{ fontSize: 13 }}>No pages connected.<br />Go to Settings to connect.</p>
           </div>
@@ -460,7 +460,7 @@ export default function BotPage() {
                 padding: "14px 16px",
                 cursor: "pointer",
                 borderBottom: "1px solid #1e1e3f",
-                background: selectedPage?.page_id === page.page_id ? "#1a1a2e" : "transparent",
+                background: selectedPage?.page_id === page.page_id ? "var(--surface)" : "transparent",
                 borderLeft: selectedPage?.page_id === page.page_id ? "3px solid #a78bfa" : "3px solid transparent",
                 transition: "all 0.2s",
               }}
@@ -469,13 +469,13 @@ export default function BotPage() {
                 {page.page_picture ? (
                   <img src={page.page_picture} alt="" style={{ width: 36, height: 36, borderRadius: "50%", objectFit: "cover" }} />
                 ) : (
-                  <div style={{ width: 36, height: 36, borderRadius: "50%", background: "#1e1e3f", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                  <div style={{ width: 36, height: 36, borderRadius: "50%", background: "var(--border)", display: "flex", alignItems: "center", justifyContent: "center" }}>
                     <MessageSquare size={16} color="#a78bfa" />
                   </div>
                 )}
                 <div style={{ flex: 1, minWidth: 0 }}>
-                  <div style={{ fontWeight: 600, fontSize: 13, color: "#fff", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{page.page_name}</div>
-                  <div style={{ fontSize: 11, color: page.is_enabled ? "#4ade80" : "#64748b", marginTop: 2 }}>
+                  <div style={{ fontWeight: 600, fontSize: 13, color: "var(--text-main)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{page.page_name}</div>
+                  <div style={{ fontSize: 11, color: page.is_enabled ? "#4ade80" : "var(--text-muted)", marginTop: 2 }}>
                     {page.is_enabled ? "🟢 Bot Active" : "⚫ Bot Off"}
                   </div>
                 </div>
@@ -498,13 +498,13 @@ export default function BotPage() {
         <div style={{ flex: 1, display: "flex", flexDirection: "column", overflowY: "auto" }}>
 
           {/* Header */}
-          <div style={{ padding: "20px 24px", borderBottom: "1px solid #1e1e3f", background: "#0d0d1f", display: "flex", alignItems: "center", gap: 16 }}>
+          <div style={{ padding: "20px 24px", borderBottom: "1px solid #1e1e3f", background: "var(--surface)", display: "flex", alignItems: "center", gap: 16 }}>
             {selectedPage.page_picture && (
               <img src={selectedPage.page_picture} alt="" style={{ width: 44, height: 44, borderRadius: "50%" }} />
             )}
             <div>
-              <h2 style={{ margin: 0, fontSize: 18, fontWeight: 700, color: "#fff" }}>{selectedPage.page_name}</h2>
-              <p style={{ margin: 0, fontSize: 12, color: selectedPage.is_enabled ? "#4ade80" : "#64748b" }}>
+              <h2 style={{ margin: 0, fontSize: 18, fontWeight: 700, color: "var(--text-main)" }}>{selectedPage.page_name}</h2>
+              <p style={{ margin: 0, fontSize: 12, color: selectedPage.is_enabled ? "#4ade80" : "var(--text-muted)" }}>
                 {selectedPage.is_enabled ? "Bot is Active — responding to messages" : "Bot is Off — messages go to inbox only"}
               </p>
             </div>
@@ -549,9 +549,9 @@ export default function BotPage() {
                     style={{
                       display: "flex", alignItems: "center", gap: 8,
                       padding: "10px 20px", borderRadius: 12, cursor: "pointer", fontWeight: 600, fontSize: 14, border: "1px solid transparent",
-                      background: (selectedPage.is_enabled && selectedPage.bot_mode === 'simple') ? "#4ade8020" : "#1a1a2e",
-                      color: (selectedPage.is_enabled && selectedPage.bot_mode === 'simple') ? "#4ade80" : "#94a3b8",
-                      borderColor: (selectedPage.is_enabled && selectedPage.bot_mode === 'simple') ? "#4ade80" : "#2d2d5e",
+                      background: (selectedPage.is_enabled && selectedPage.bot_mode === 'simple') ? "#4ade8020" : "var(--surface)",
+                      color: (selectedPage.is_enabled && selectedPage.bot_mode === 'simple') ? "#4ade80" : "var(--text-muted)",
+                      borderColor: (selectedPage.is_enabled && selectedPage.bot_mode === 'simple') ? "#4ade80" : "var(--border)",
                       transition: "all 0.2s"
                     }}
                   >
@@ -582,9 +582,9 @@ export default function BotPage() {
                     style={{
                       display: "flex", alignItems: "center", gap: 8,
                       padding: "10px 20px", borderRadius: 12, cursor: "pointer", fontWeight: 600, fontSize: 14, border: "1px solid transparent",
-                      background: (selectedPage.is_enabled && selectedPage.bot_mode === 'ai') ? "#a78bfa20" : "#1a1a2e",
-                      color: (selectedPage.is_enabled && selectedPage.bot_mode === 'ai') ? "#a78bfa" : "#94a3b8",
-                      borderColor: (selectedPage.is_enabled && selectedPage.bot_mode === 'ai') ? "#a78bfa" : "#2d2d5e",
+                      background: (selectedPage.is_enabled && selectedPage.bot_mode === 'ai') ? "#a78bfa20" : "var(--surface)",
+                      color: (selectedPage.is_enabled && selectedPage.bot_mode === 'ai') ? "#a78bfa" : "var(--text-muted)",
+                      borderColor: (selectedPage.is_enabled && selectedPage.bot_mode === 'ai') ? "#a78bfa" : "var(--border)",
                       transition: "all 0.2s"
                     }}
                   >
@@ -595,14 +595,14 @@ export default function BotPage() {
 
                 {/* Content Area Rendering */}
                 {selectedPage.bot_mode === 'ai' ? (
-                  <div style={{ background: "#1a1a2e", border: "1px solid #2d2d5e", borderRadius: 12, padding: 24, marginBottom: 24 }}>
-                    <h3 style={{ margin: "0 0 8px", fontSize: 16, fontWeight: 700, color: "#fff" }}>🤖 AI Assistant Instructions</h3>
-                    <p style={{ margin: "0 0 20px", fontSize: 12, color: "#64748b" }}>
+                  <div style={{ background: "var(--surface)", border: "1px solid #2d2d5e", borderRadius: 12, padding: 24, marginBottom: 24 }}>
+                    <h3 style={{ margin: "0 0 8px", fontSize: 16, fontWeight: 700, color: "var(--text-main)" }}>🤖 AI Assistant Instructions</h3>
+                    <p style={{ margin: "0 0 20px", fontSize: 12, color: "var(--text-muted)" }}>
                       Write instructions to guide your AI Bot. Describe your company, support policies, tone, and specific ways it should reply.
                     </p>
 
                     <div style={{ marginBottom: 20 }}>
-                      <label style={{ fontSize: 12, color: "#94a3b8", display: "block", marginBottom: 6 }}>Model Provider (OpenRouter)</label>
+                      <label style={{ fontSize: 12, color: "var(--text-muted)", display: "block", marginBottom: 6 }}>Model Provider (OpenRouter)</label>
                       <select
                         value={selectedPage.ai_model}
                         onChange={(e) => {
@@ -611,8 +611,8 @@ export default function BotPage() {
                           setPages(pages.map(p => p.page_id === selectedPage.page_id ? updated : p));
                         }}
                         style={{
-                          width: "100%", background: "#0a0a15", border: "1px solid #2d2d5e",
-                          borderRadius: 8, color: "#e2e8f0", padding: "10px 12px", fontSize: 13,
+                          width: "100%", background: "var(--surface)", border: "1px solid #2d2d5e",
+                          borderRadius: 8, color: "var(--text-main)", padding: "10px 12px", fontSize: 13,
                           fontFamily: "inherit"
                         }}
                       >
@@ -642,7 +642,7 @@ export default function BotPage() {
                         disabled={saving}
                         style={{
                           padding: "10px 24px", background: "#a78bfa", border: "none",
-                          borderRadius: 8, color: "#fff", cursor: "pointer", fontWeight: 600, fontSize: 13
+                          borderRadius: 8, color: "var(--text-main)", cursor: "pointer", fontWeight: 600, fontSize: 13
                         }}
                       >
                         {saving ? "Saving..." : "Save AI Configuration"}
@@ -651,19 +651,19 @@ export default function BotPage() {
                     </div>
                   </div>
                 ) : (
-                  <div style={{ background: "#0d0d1f", borderRadius: 12, padding: 4 }}>
+                  <div style={{ background: "var(--surface)", borderRadius: 12, padding: 4 }}>
                     {/* Rules List */}
                     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
                       <div>
-                        <h3 style={{ margin: 0, fontSize: 15, fontWeight: 700, color: "#fff" }}>Keyword Rules</h3>
-                        <p style={{ margin: 0, fontSize: 12, color: "#64748b" }}>{rules.length} rule{rules.length !== 1 ? "s" : ""} configured</p>
+                        <h3 style={{ margin: 0, fontSize: 15, fontWeight: 700, color: "var(--text-main)" }}>Keyword Rules</h3>
+                        <p style={{ margin: 0, fontSize: 12, color: "var(--text-muted)" }}>{rules.length} rule{rules.length !== 1 ? "s" : ""} configured</p>
                       </div>
                       <div style={{ display: "flex", gap: 8 }}>
                         <button
                           onClick={() => setShowCopyModal(true)}
                           style={{
                             display: "flex", alignItems: "center", gap: 6, padding: "8px 16px",
-                            background: "#1a1a2e", border: "1px solid #2d2d5e", borderRadius: 8, color: "#fff",
+                            background: "var(--surface)", border: "1px solid #2d2d5e", borderRadius: 8, color: "var(--text-main)",
                             cursor: "pointer", fontWeight: 600, fontSize: 13,
                           }}
                         >
@@ -676,7 +676,7 @@ export default function BotPage() {
                           }}
                           style={{
                             display: "flex", alignItems: "center", gap: 6, padding: "8px 16px",
-                            background: "#a78bfa", border: "none", borderRadius: 8, color: "#fff",
+                            background: "#a78bfa", border: "none", borderRadius: 8, color: "var(--text-main)",
                             cursor: "pointer", fontWeight: 600, fontSize: 13,
                           }}
                         >
@@ -700,49 +700,49 @@ export default function BotPage() {
 
                     {/* Add Rule Form */}
                     {showAddRule && (
-                      <div id="bot-config-area" style={{ background: "#1a1a2e", border: "1px solid #a78bfa50", borderRadius: 12, padding: 20, marginBottom: 16 }}>
+                      <div id="bot-config-area" style={{ background: "var(--surface)", border: "1px solid #a78bfa50", borderRadius: 12, padding: 20, marginBottom: 16 }}>
                         <h4 style={{ margin: "0 0 14px", color: "#a78bfa", fontSize: 14 }}>
                           {editingRuleId ? "✏️ Edit Keyword Rule" : "➕ New Keyword Rule"}
                         </h4>
                         <div style={{ marginBottom: 12 }}>
-                          <label style={{ fontSize: 12, color: "#94a3b8", display: "block", marginBottom: 6 }}>
-                            Keywords <span style={{ color: "#64748b" }}>(comma separated, e.g: deposit, cashapp, pay)</span>
+                          <label style={{ fontSize: 12, color: "var(--text-muted)", display: "block", marginBottom: 6 }}>
+                            Keywords <span style={{ color: "var(--text-muted)" }}>(comma separated, e.g: deposit, cashapp, pay)</span>
                           </label>
                           <input
                             value={newRule.keywords}
                             onChange={(e) => setNewRule({ ...newRule, keywords: e.target.value })}
                             placeholder="deposit, cashapp, send money..."
                             style={{
-                              width: "100%", background: "#0a0a15", border: "1px solid #2d2d5e",
-                              borderRadius: 8, color: "#e2e8f0", padding: "10px 12px", fontSize: 13,
+                              width: "100%", background: "var(--surface)", border: "1px solid #2d2d5e",
+                              borderRadius: 8, color: "var(--text-main)", padding: "10px 12px", fontSize: 13,
                               fontFamily: "inherit", boxSizing: "border-box",
                             }}
                           />
                         </div>
                         <div style={{ marginBottom: 14 }}>
-                          <label style={{ fontSize: 12, color: "#94a3b8", display: "block", marginBottom: 6 }}>Bot Reply</label>
+                          <label style={{ fontSize: 12, color: "var(--text-muted)", display: "block", marginBottom: 6 }}>Bot Reply</label>
                           <textarea
                             value={newRule.response}
                             onChange={(e) => setNewRule({ ...newRule, response: e.target.value })}
                             placeholder="Write the exact reply the bot will send..."
                             rows={3}
                             style={{
-                              width: "100%", background: "#0a0a15", border: "1px solid #2d2d5e",
-                              borderRadius: 8, color: "#e2e8f0", padding: "10px 12px", fontSize: 13,
+                              width: "100%", background: "var(--surface)", border: "1px solid #2d2d5e",
+                              borderRadius: 8, color: "var(--text-main)", padding: "10px 12px", fontSize: 13,
                               fontFamily: "inherit", resize: "vertical", boxSizing: "border-box",
                             }}
                           />
                         </div>
 
                         {showMediaUpload && (
-                          <div style={{ marginBottom: 16, background: "#0a0a15", padding: 12, borderRadius: 8, border: "1px dashed #475569" }}>
-                            <label style={{ fontSize: 12, color: "#94a3b8", display: "block", marginBottom: 8 }}>Picture Attachment (Optional)</label>
+                          <div style={{ marginBottom: 16, background: "var(--surface)", padding: 12, borderRadius: 8, border: "1px dashed #475569" }}>
+                            <label style={{ fontSize: 12, color: "var(--text-muted)", display: "block", marginBottom: 8 }}>Picture Attachment (Optional)</label>
                             {newRule.media_url ? (
                               <div style={{ position: "relative", display: "inline-block" }}>
                                 <img src={newRule.media_url} alt="Uploaded preview" style={{ height: 100, borderRadius: 8, border: "1px solid #2d2d5e" }} />
                                 <button
                                   onClick={() => setNewRule({ ...newRule, media_url: "" })}
-                                  style={{ position: "absolute", top: -8, right: -8, background: "#ef4444", color: "#fff", border: "none", borderRadius: "50%", width: 24, height: 24, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}
+                                  style={{ position: "absolute", top: -8, right: -8, background: "#ef4444", color: "var(--text-main)", border: "none", borderRadius: "50%", width: 24, height: 24, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}
                                 >
                                   ✕
                                 </button>
@@ -754,7 +754,7 @@ export default function BotPage() {
                                   accept="image/*"
                                   onChange={handleImageUpload}
                                   disabled={uploadingMedia}
-                                  style={{ fontSize: 12, color: "#94a3b8" }}
+                                  style={{ fontSize: 12, color: "var(--text-muted)" }}
                                 />
                                 {uploadingMedia && <Loader2 size={16} className="animate-spin text-blue-400" />}
                               </div>
@@ -768,7 +768,7 @@ export default function BotPage() {
                             disabled={saving || !newRule.keywords || (!newRule.response && !newRule.media_url)}
                             style={{
                               padding: "9px 20px", background: saving ? "#374151" : "#a78bfa",
-                              border: "none", borderRadius: 8, color: "#fff", cursor: "pointer",
+                              border: "none", borderRadius: 8, color: "var(--text-main)", cursor: "pointer",
                               fontWeight: 600, fontSize: 13,
                             }}
                           >
@@ -782,7 +782,7 @@ export default function BotPage() {
                             }}
                             style={{
                               padding: "9px 20px", background: "transparent",
-                              border: "1px solid #2d2d5e", borderRadius: 8, color: "#94a3b8", cursor: "pointer",
+                              border: "1px solid #2d2d5e", borderRadius: 8, color: "var(--text-muted)", cursor: "pointer",
                               fontWeight: 600, fontSize: 13,
                             }}
                           >
@@ -794,7 +794,7 @@ export default function BotPage() {
 
                     {/* Rules */}
                     {rules.length === 0 ? (
-                      <div style={{ textAlign: "center", padding: "40px 0", color: "#64748b" }}>
+                      <div style={{ textAlign: "center", padding: "40px 0", color: "var(--text-muted)" }}>
                         <Zap size={40} style={{ marginBottom: 12, opacity: 0.3 }} />
                         <p style={{ fontSize: 14 }}>No rules yet. Add your first keyword rule above!</p>
                       </div>
@@ -803,8 +803,8 @@ export default function BotPage() {
                         <div
                           key={rule.id}
                           style={{
-                            background: "#1a1a2e", borderRadius: 12, padding: 16, marginBottom: 12,
-                            border: `1px solid ${rule.is_active ? "#2d2d5e" : "#1e1e3f"}`,
+                            background: "var(--surface)", borderRadius: 12, padding: 16, marginBottom: 12,
+                            border: `1px solid ${rule.is_active ? "var(--border)" : "var(--border)"}`,
                             opacity: rule.is_active ? 1 : 0.5, transition: "all 0.2s",
                           }}
                         >
@@ -818,7 +818,7 @@ export default function BotPage() {
                                   }}>{kw}</span>
                                 ))}
                               </div>
-                              <div style={{ fontSize: 13, color: "#94a3b8", background: "#0a0a15", padding: "10px 12px", borderRadius: 8, borderLeft: "3px solid #a78bfa" }}>
+                              <div style={{ fontSize: 13, color: "var(--text-muted)", background: "var(--surface)", padding: "10px 12px", borderRadius: 8, borderLeft: "3px solid #a78bfa" }}>
                                 {rule.response}
                                 {rule.media_url && (
                                   <div style={{ marginTop: 8 }}>
@@ -834,7 +834,7 @@ export default function BotPage() {
                                 style={{
                                   background: rule.is_active ? "#4ade8020" : "#37415150",
                                   border: "none", borderRadius: 6, padding: "6px 8px", cursor: "pointer",
-                                  color: rule.is_active ? "#4ade80" : "#64748b",
+                                  color: rule.is_active ? "#4ade80" : "var(--text-muted)",
                                 }}
                               >
                                 {rule.is_active ? <ToggleRight size={16} /> : <ToggleLeft size={16} />}
@@ -865,7 +865,7 @@ export default function BotPage() {
           </div>
         </div>
       ) : (
-        <div style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center", color: "#64748b" }}>
+        <div style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center", color: "var(--text-muted)" }}>
           <div style={{ textAlign: "center" }}>
             <Bot size={48} style={{ marginBottom: 12, opacity: 0.3 }} />
             <p>Select a page to configure its bot</p>
@@ -876,14 +876,14 @@ export default function BotPage() {
       {/* Copy Rules Modal */}
       {showCopyModal && selectedPage && (
         <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.6)", zIndex: 100, display: "flex", alignItems: "center", justifyContent: "center" }}>
-          <div style={{ background: "#0f0f1a", width: 400, borderRadius: 16, border: "1px solid #2d2d5e", padding: 24, boxShadow: "0 20px 25px -5px rgba(0, 0, 0, 0.5)" }}>
-            <h3 style={{ margin: "0 0 16px", fontSize: 18, color: "#fff" }}>Apply Rules to Other Pages</h3>
-            <p style={{ margin: "0 0 16px", fontSize: 13, color: "#94a3b8" }}>
+          <div style={{ background: "var(--background)", width: 400, borderRadius: 16, border: "1px solid #2d2d5e", padding: 24, boxShadow: "0 20px 25px -5px rgba(0, 0, 0, 0.5)" }}>
+            <h3 style={{ margin: "0 0 16px", fontSize: 18, color: "var(--text-main)" }}>Apply Rules to Other Pages</h3>
+            <p style={{ margin: "0 0 16px", fontSize: 13, color: "var(--text-muted)" }}>
               Select the pages you want to apply these {rules.length} rules to. This will replace any existing rules on those pages.
             </p>
             <div style={{ maxHeight: 200, overflowY: "auto", border: "1px solid #2d2d5e", borderRadius: 8, marginBottom: 16 }}>
               {pages.filter(p => p.page_id !== selectedPage.page_id).map(p => (
-                <label key={p.page_id} style={{ display: "flex", alignItems: "center", gap: 10, padding: 12, borderBottom: "1px solid #1e1e3f", cursor: "pointer", background: selectedTargets.includes(p.page_id) ? "#1a1a2e" : "transparent" }}>
+                <label key={p.page_id} style={{ display: "flex", alignItems: "center", gap: 10, padding: 12, borderBottom: "1px solid #1e1e3f", cursor: "pointer", background: selectedTargets.includes(p.page_id) ? "var(--surface)" : "transparent" }}>
                   <input 
                     type="checkbox" 
                     checked={selectedTargets.includes(p.page_id)}
@@ -893,16 +893,16 @@ export default function BotPage() {
                     }}
                     style={{ accentColor: "#a78bfa", width: 16, height: 16 }}
                   />
-                  <span style={{ fontSize: 14, color: "#fff" }}>{p.page_name}</span>
+                  <span style={{ fontSize: 14, color: "var(--text-main)" }}>{p.page_name}</span>
                 </label>
               ))}
               {pages.filter(p => p.page_id !== selectedPage.page_id).length === 0 && (
-                <div style={{ padding: 16, textAlign: "center", color: "#64748b", fontSize: 13 }}>No other pages available.</div>
+                <div style={{ padding: 16, textAlign: "center", color: "var(--text-muted)", fontSize: 13 }}>No other pages available.</div>
               )}
             </div>
             <div style={{ display: "flex", gap: 10, justifyContent: "flex-end" }}>
-              <button onClick={() => setShowCopyModal(false)} style={{ padding: "8px 16px", background: "transparent", color: "#94a3b8", border: "1px solid #2d2d5e", borderRadius: 8, cursor: "pointer", fontWeight: 600, fontSize: 13 }}>Cancel</button>
-              <button onClick={copyRulesToPages} disabled={selectedTargets.length === 0 || saving} style={{ padding: "8px 16px", background: "#a78bfa", color: "#fff", border: "none", borderRadius: 8, cursor: selectedTargets.length === 0 ? "not-allowed" : "pointer", fontWeight: 600, fontSize: 13, opacity: selectedTargets.length === 0 ? 0.5 : 1 }}>
+              <button onClick={() => setShowCopyModal(false)} style={{ padding: "8px 16px", background: "transparent", color: "var(--text-muted)", border: "1px solid #2d2d5e", borderRadius: 8, cursor: "pointer", fontWeight: 600, fontSize: 13 }}>Cancel</button>
+              <button onClick={copyRulesToPages} disabled={selectedTargets.length === 0 || saving} style={{ padding: "8px 16px", background: "#a78bfa", color: "var(--text-main)", border: "none", borderRadius: 8, cursor: selectedTargets.length === 0 ? "not-allowed" : "pointer", fontWeight: 600, fontSize: 13, opacity: selectedTargets.length === 0 ? 0.5 : 1 }}>
                 {saving ? "Applying..." : "Apply Rules"}
               </button>
             </div>
