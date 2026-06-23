@@ -326,7 +326,7 @@ export default function LiveInbox({ filterPageId }: { filterPageId?: string | nu
                 const c = updated[existingIndex];
                 
                 // Prevent duplicate optimistic inserts
-                if (c.messages.some(m => m.text === msgData.text && Date.now() - m.timestamp < 60000)) {
+                if (c.messages.some(m => m.text === msgData.text && Date.now() - (m.timestamp ?? 0) < 60000)) {
                    return prev;
                 }
                 
