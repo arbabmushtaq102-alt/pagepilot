@@ -14,7 +14,9 @@ export async function POST(request: Request) {
       method: "POST",
       headers: {
         "Authorization": `Bearer ${openRouterApiKey}`,
-        "Content-Type": "application/json"
+        "Content-Type": "application/json",
+        "HTTP-Referer": "https://pagespilot.online",
+        "X-Title": "PagePilot CRM Bot"
       },
       body: JSON.stringify({
         model: "google/gemini-2.5-flash",
@@ -32,7 +34,14 @@ export async function POST(request: Request) {
     });
 
     const data = await response.json();
-    const improvedText = data.choices?.[0]?.message?.content || text;
+    if (data.error) {
+      console.error('OpenRouter error:', data.error);
+      return NextResponse.json({ error: 'OpenRouter Error' }, { status: 500 });
+    }
+
+    let improvedText = data.choices?.[0]?.message?.content || text;
+    // Clean up quotes or markdown if Gemini adds them
+    improvedText = improvedText.replace(/^["']|["']$/g, '').trim();
 
     return NextResponse.json({ improvedText });
   } catch (error) {

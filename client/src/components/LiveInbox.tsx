@@ -455,9 +455,12 @@ export default function LiveInbox({ filterPageId }: { filterPageId?: string | nu
       const data = await res.json();
       if (data.improvedText) {
         setReplyText(data.improvedText);
+      } else if (data.error) {
+        alert(`AI Error: ${data.error}`);
       }
     } catch (err) {
       console.error(err);
+      alert('Network error connecting to AI.');
     } finally {
       setIsImprovingChat(false);
     }
