@@ -305,7 +305,7 @@ export default function CampaignsPage() {
                   <tbody>
                     {history.map((camp: any) => (
                       <tr key={camp.id} className="border-b border-border/30 hover:bg-surface/50 transition-colors">
-                        <td className="px-6 py-4 font-medium text-white">{camp.name}<br/><span className="text-xs text-textMuted font-normal">{camp.date}</span></td>
+                        <td className="px-6 py-4 font-medium text-textMain">{camp.name}<br/><span className="text-xs text-textMuted font-normal">{camp.date}</span></td>
                         <td className="px-6 py-4">
                           <span className={`px-2.5 py-1 text-xs rounded-full font-medium ${camp.status === 'Active' ? 'bg-green-500/10 text-green-400 border border-green-500/20' : camp.status === 'Scheduled' ? 'bg-blue-500/10 text-blue-400 border border-blue-500/20' : 'bg-surface text-textMuted'}`}>
                             {camp.status}
@@ -315,7 +315,7 @@ export default function CampaignsPage() {
                         <td className="px-6 py-4 text-emerald-400 font-medium">
                           {camp.opened.toLocaleString()} <span className="text-xs text-textMuted ml-1">({camp.sent > 0 ? Math.round((camp.opened/camp.sent)*100) : 0}%)</span>
                         </td>
-                        <td className="px-6 py-4 font-bold text-white">{camp.sales}</td>
+                        <td className="px-6 py-4 font-bold text-textMain">{camp.sales}</td>
                         <td className="px-6 py-4 text-right">
                           <button className="p-2 hover:bg-surface rounded-lg text-textMuted transition-colors"><Copy className="w-4 h-4" /></button>
                           <button className="p-2 hover:bg-surface rounded-lg text-textMuted transition-colors"><MoreVertical className="w-4 h-4" /></button>
@@ -665,7 +665,7 @@ function StatCard({ title, value, icon }: { title: string, value: string, icon: 
     <div className="glass p-6 rounded-2xl border border-border/50 hover:border-primary/30 transition-colors flex items-center justify-between group">
       <div>
         <p className="text-textMuted text-sm font-medium mb-1">{title}</p>
-        <h4 className="text-3xl font-bold text-white">{value}</h4>
+        <h4 className="text-3xl font-bold text-textMain">{value}</h4>
       </div>
       <div className="w-12 h-12 rounded-xl bg-surface flex items-center justify-center group-hover:scale-110 transition-transform">
         {icon}

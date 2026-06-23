@@ -213,18 +213,14 @@ export default function SettingsPage() {
 
   const handleUpdatePassword = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!newPassword || newPassword.length < 6) {
-      alert("Password must be at least 6 characters.");
-      return;
-    }
+    if (!userEmail) return;
     setIsUpdatingPassword(true);
-    const { error } = await supabase.auth.updateUser({ password: newPassword });
+    const { error } = await supabase.auth.resetPasswordForEmail(userEmail);
     setIsUpdatingPassword(false);
     if (error) {
-      alert(`Error updating password: ${error.message}`);
+      alert(`Error sending reset email: ${error.message}`);
     } else {
-      alert("Password updated successfully!");
-      setNewPassword("");
+      alert(`A password reset email has been sent to ${userEmail}. Please check your inbox.`);
     }
   };
 
@@ -466,22 +462,18 @@ export default function SettingsPage() {
 
         <form onSubmit={handleUpdatePassword} className="space-y-3">
           <label className="text-sm font-medium text-textMain flex items-center gap-2">
-            <Lock className="w-4 h-4" /> Change Password
+            <Lock className="w-4 h-4" /> Reset Password
           </label>
           <div className="flex flex-col sm:flex-row gap-3">
-            <input
-              type="password"
-              placeholder="Enter new password (min 6 chars)"
-              value={newPassword}
-              onChange={(e) => setNewPassword(e.target.value)}
-              className="flex-1 bg-surface border border-border rounded-xl px-4 py-2.5 text-textMain placeholder:text-textMuted focus:outline-none focus:ring-2 focus:ring-primary/50"
-            />
+            <p className="flex-1 text-sm text-textMuted py-2">
+              Click the button to receive a password reset link at your registered email address.
+            </p>
             <button
               type="submit"
-              disabled={isUpdatingPassword || newPassword.length < 6}
+              disabled={isUpdatingPassword || !userEmail}
               className="bg-primary hover:bg-primaryHover disabled:opacity-50 disabled:cursor-not-allowed text-white px-6 py-2.5 rounded-xl font-medium transition-all"
             >
-              {isUpdatingPassword ? "Updating..." : "Update Password"}
+              {isUpdatingPassword ? "Sending..." : "Send Reset Email"}
             </button>
           </div>
         </form>

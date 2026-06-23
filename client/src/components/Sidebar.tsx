@@ -35,11 +35,10 @@ export default function Sidebar() {
       <aside className="w-64 glass border-r border-y-0 border-l-0 flex flex-col h-full shrink-0">
         <div className="p-6">
           <Link href="/" className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-xl flex items-center justify-center bg-white shadow-lg overflow-hidden shrink-0">
-              <img src="/logo.svg" alt="Pagepilot Logo" className="w-full h-full object-cover" />
-              <MessageSquare className="w-5 h-5 text-blue-500 hidden" />
+            <div className="w-9 h-9 rounded-xl flex items-center justify-center bg-primary shadow-lg overflow-hidden shrink-0">
+              <MessageSquare className="w-5 h-5 text-white" />
             </div>
-            <span className="text-xl font-bold tracking-tight text-white">Pagepilot</span>
+            <span className="text-xl font-bold tracking-tight text-textMain">Pagepilot</span>
           </Link>
         </div>
 
@@ -54,8 +53,8 @@ export default function Sidebar() {
                 className={clsx(
                   "flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 group relative",
                   isActive 
-                    ? "text-white bg-primary/10" 
-                    : "text-textMuted hover:text-white hover:bg-surface"
+                    ? "text-primary font-bold bg-primary/10" 
+                    : "text-textMuted hover:text-textMain hover:bg-surface"
                 )}
               >
                 {isActive && (
