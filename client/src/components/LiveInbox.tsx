@@ -639,7 +639,7 @@ export default function LiveInbox({ filterPageId }: { filterPageId?: string | nu
       <div className="glass rounded-2xl flex items-center justify-center h-[600px] border border-border">
         <div className="text-center p-8">
           <AlertTriangle className="w-7 h-7 text-yellow-400 mx-auto mb-4" />
-          <h3 className="text-lg font-semibold text-white mb-2">No Facebook Pages Connected</h3>
+          <h3 className="text-lg font-semibold text-textMain mb-2">No Facebook Pages Connected</h3>
           <p className="text-textMuted text-sm mb-4">Connect your pages in Settings to view your inbox.</p>
           <a href="/dashboard/settings" className="inline-flex items-center gap-2 px-4 py-2 bg-primary hover:bg-primaryHover text-white rounded-lg text-sm font-medium transition-colors">Go to Settings →</a>
         </div>
@@ -660,7 +660,7 @@ export default function LiveInbox({ filterPageId }: { filterPageId?: string | nu
               <div className="relative">
                 <button
                   onClick={() => setShowPageFilter(!showPageFilter)}
-                  className="flex items-center gap-2 px-3 py-1.5 bg-background border border-border rounded-lg text-sm text-white hover:border-primary transition-colors"
+                  className="flex items-center gap-2 px-3 py-1.5 bg-background border border-border rounded-lg text-sm text-textMain hover:border-primary transition-colors"
                 >
                   <Filter className="w-3.5 h-3.5 text-textMuted" />
                   <span>{selectedPageIds.length === pages.length ? "All Pages" : `${selectedPageIds.length} Pages`}</span>
@@ -671,7 +671,7 @@ export default function LiveInbox({ filterPageId }: { filterPageId?: string | nu
                     <div className="p-2 border-b border-border">
                       <button
                         onClick={() => setSelectedPageIds(selectedPageIds.length === pages.length ? [] : pages.map(p => p.id))}
-                        className="w-full text-left text-xs px-2 py-1.5 rounded-lg hover:bg-surface text-textMuted hover:text-white transition-colors"
+                        className="w-full text-left text-xs px-2 py-1.5 rounded-lg hover:bg-surface text-textMuted hover:text-textMain transition-colors"
                       >
                         {selectedPageIds.length === pages.length ? "Deselect All" : "Select All"}
                       </button>
@@ -704,7 +704,7 @@ export default function LiveInbox({ filterPageId }: { filterPageId?: string | nu
               </div>
             </>
           ) : (
-            <div className="text-sm font-semibold text-white px-2 flex items-center gap-2">
+            <div className="text-sm font-semibold text-textMain px-2 flex items-center gap-2">
                <span className={`w-2 h-2 rounded-full bg-primary`} />
                {pages.find(p => p.id === filterPageId)?.name} Inbox
             </div>
@@ -730,7 +730,7 @@ export default function LiveInbox({ filterPageId }: { filterPageId?: string | nu
           {/* Header */}
           <div className="p-3 border-b border-border">
           <div className="flex items-center justify-between mb-2">
-              <h3 className="font-semibold text-sm text-white">
+              <h3 className="font-semibold text-sm text-textMain">
                 {showUnreadOnly ? "Unread Chats" : "All Conversations"}
               </h3>
               <div className="flex items-center gap-2">
@@ -742,7 +742,7 @@ export default function LiveInbox({ filterPageId }: { filterPageId?: string | nu
                     showUnreadOnly
                       ? "bg-primary text-white border-primary"
                       : unreadCount > 0
-                      ? "bg-surface border-border text-textMuted hover:border-primary hover:text-white"
+                      ? "bg-surface border-border text-textMuted hover:border-primary hover:text-textMain"
                       : "bg-surface border-border text-textMuted opacity-50 cursor-default"
                   }`}
                   disabled={unreadCount === 0 && !showUnreadOnly}
@@ -759,7 +759,7 @@ export default function LiveInbox({ filterPageId }: { filterPageId?: string | nu
                 placeholder="Search customers, pages, tags..."
                 value={searchQuery}
                 onChange={e => setSearchQuery(e.target.value)}
-                className="w-full bg-background border border-border rounded-lg pl-8 pr-3 py-1.5 text-xs text-white focus:outline-none focus:border-primary transition-colors"
+                className="w-full bg-background border border-border rounded-lg pl-8 pr-3 py-1.5 text-xs text-textMain focus:outline-none focus:border-primary transition-colors"
               />
             </div>
           </div>
@@ -908,7 +908,7 @@ export default function LiveInbox({ filterPageId }: { filterPageId?: string | nu
               {/* Chat Header */}
               <div className="p-4 border-b border-border bg-surface/30 flex justify-between items-center flex-wrap gap-2">
                 <div className="flex items-center gap-3">
-                  <button className="p-2 rounded-lg hover:bg-surface text-textMuted hover:text-white transition-colors" onClick={() => setActiveId(null)} title="Back to list">
+                  <button className="p-2 rounded-lg hover:bg-surface text-textMuted hover:text-textMain transition-colors" onClick={() => setActiveId(null)} title="Back to list">
                     <X className="w-5 h-5" />
                   </button>
                   {(() => {
@@ -922,7 +922,7 @@ export default function LiveInbox({ filterPageId }: { filterPageId?: string | nu
                   })()}
                   <div>
                     <div className="flex items-center gap-2">
-                      <h3 className="font-semibold text-white">{activeConv.customerName}</h3>
+                      <h3 className="font-semibold text-textMain">{activeConv.customerName}</h3>
                       {escalatedConvIds.has(`${activeConv.pageId}_${activeConv.customerId}`) && (
                         <span className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-orange-500/20 border border-orange-500/40 text-orange-400 text-[10px] font-bold">
                           <AlertTriangle className="w-3 h-3" /> Bot Needs Agent
@@ -950,7 +950,7 @@ export default function LiveInbox({ filterPageId }: { filterPageId?: string | nu
                   className={`flex items-center gap-2 px-3 py-1.5 rounded-lg border text-xs font-semibold transition-all ${
                     !disabledLeadIds.has(`${activeConv.pageId}_${activeConv.customerId}`)
                       ? 'bg-green-500/10 border-green-500/30 text-green-400 hover:bg-green-500/20'
-                      : 'bg-surface border-border text-textMuted hover:border-primary hover:text-white'
+                      : 'bg-surface border-border text-textMuted hover:border-primary hover:text-textMain'
                   }`}
                 >
                   <Bot className="w-3.5 h-3.5" />
@@ -965,7 +965,7 @@ export default function LiveInbox({ filterPageId }: { filterPageId?: string | nu
                   {activeConv.labels.map(label => (
                     <span key={label} className="flex items-center gap-1 text-xs px-2 py-1 rounded-md bg-primary/20 text-primary border border-primary/20 font-medium">
                       {label}
-                      <button onClick={() => toggleLabel(label)} className="hover:text-white"><X className="w-3 h-3" /></button>
+                      <button onClick={() => toggleLabel(label)} className="hover:text-textMain"><X className="w-3 h-3" /></button>
                     </span>
                   ))}
                   <button onClick={() => setIsAddingLabel(!isAddingLabel)} className="flex items-center gap-1 text-xs px-2 py-1 rounded-md bg-surface hover:bg-surfaceHover border border-border text-textMuted transition-colors">
@@ -975,7 +975,7 @@ export default function LiveInbox({ filterPageId }: { filterPageId?: string | nu
                     <div className="absolute right-0 top-full mt-2 w-56 bg-background border border-border rounded-xl shadow-2xl z-10 overflow-hidden flex flex-col">
                       <div className="p-2 border-b border-border">
                         <div className="flex items-center gap-2">
-                          <input type="text" value={newTagText} onChange={e => setNewTagText(e.target.value)} onKeyDown={e => e.key === 'Enter' && handleCreateCustomTag()} placeholder="Custom tag..." className="w-full bg-background border border-border rounded-lg px-2 py-1.5 text-xs focus:outline-none focus:border-primary text-white" />
+                          <input type="text" value={newTagText} onChange={e => setNewTagText(e.target.value)} onKeyDown={e => e.key === 'Enter' && handleCreateCustomTag()} placeholder="Custom tag..." className="w-full bg-background border border-border rounded-lg px-2 py-1.5 text-xs focus:outline-none focus:border-primary text-textMain" />
                           <button onClick={handleCreateCustomTag} disabled={!newTagText.trim()} className="p-1.5 bg-primary text-white rounded-lg disabled:opacity-50"><Plus className="w-3 h-3" /></button>
                         </div>
                       </div>
@@ -1034,12 +1034,12 @@ export default function LiveInbox({ filterPageId }: { filterPageId?: string | nu
                 {/* Toolbar */}
                 <div className="flex items-center gap-2 mb-2">
                   <button onClick={() => setShowEmojiPicker(!showEmojiPicker)}
-                    className={`p-2 rounded-lg transition-colors ${showEmojiPicker ? 'bg-primary/20 text-primary' : 'hover:bg-surface text-textMuted hover:text-white'}`}>
+                    className={`p-2 rounded-lg transition-colors ${showEmojiPicker ? 'bg-primary/20 text-primary' : 'hover:bg-surface text-textMuted hover:text-textMain'}`}>
                     <Smile className="w-5 h-5" />
                   </button>
                   <button onClick={() => fileInputRef.current?.click()}
                     disabled={isSendingImage}
-                    className="p-2 rounded-lg hover:bg-surface text-textMuted hover:text-white transition-colors disabled:opacity-50" title="Send Image">
+                    className="p-2 rounded-lg hover:bg-surface text-textMuted hover:text-textMain transition-colors disabled:opacity-50" title="Send Image">
                     {isSendingImage ? <RefreshCw className="w-5 h-5 animate-spin" /> : <ImageIcon className="w-5 h-5" />}
                   </button>
                   <input ref={fileInputRef} type="file" accept="image/*,video/*,application/pdf" className="hidden"
@@ -1054,7 +1054,7 @@ export default function LiveInbox({ filterPageId }: { filterPageId?: string | nu
                     onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleSendReply(); } }}
                     placeholder={`Reply to ${activeConv.customerName} via ${activeConv.pageName}...`}
                     rows={2}
-                    className="flex-1 bg-background border border-border rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-primary resize-none transition-colors"
+                    className="flex-1 bg-background border border-border rounded-xl px-4 py-3 text-sm text-textMain focus:outline-none focus:border-primary resize-none transition-colors"
                   />
                   <button onClick={handleSendReply} disabled={!replyText.trim()}
                     className="p-3 rounded-xl bg-primary hover:bg-primaryHover text-white disabled:opacity-50 transition-all shrink-0 shadow-lg">
@@ -1069,7 +1069,7 @@ export default function LiveInbox({ filterPageId }: { filterPageId?: string | nu
                 <UserIcon className="w-8 h-8 opacity-30" />
               </div>
               <div className="text-center">
-                <p className="font-medium text-white">Select a conversation</p>
+                <p className="font-medium text-textMain">Select a conversation</p>
                 <p className="text-sm mt-1">Choose any chat from the left to start replying</p>
               </div>
             </div>
