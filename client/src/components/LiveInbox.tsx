@@ -70,11 +70,11 @@ export default function LiveInbox({ filterPageId }: { filterPageId?: string | nu
   const [isAutoSyncEnabled, setIsAutoSyncEnabled] = useState(true);
   const syncInterval = 5000;
   // Pinned chat IDs - max 7, persisted in localStorage
-  const [pinnedIds, setPinnedIds] = useState<Set<string>>(() => {
+  const [pinnedIds, setPinnedIds] = useState<string[]>(() => {
     try {
       const saved = localStorage.getItem('meta_pinned_conv_ids');
-      return saved ? new Set(JSON.parse(saved)) : new Set();
-    } catch { return new Set(); }
+      return saved ? JSON.parse(saved) : [];
+    } catch { return []; }
   });
   const [isSyncing, setIsSyncing] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -501,17 +501,18 @@ export default function LiveInbox({ filterPageId }: { filterPageId?: string | nu
   const togglePin = (convId: string, e: React.MouseEvent) => {
     e.stopPropagation();
     setPinnedIds(prev => {
-      const next = new Set(prev);
-      if (next.has(convId)) {
-        next.delete(convId);
+      const isPinned = prev.includes(convId);
+      let next: string[];
+      if (isPinned) {
+        next = prev.filter(id => id !== convId);
       } else {
-        if (next.size >= 7) {
+        if (prev.length >= 7) {
           alert('You can only pin up to 7 chats.');
           return prev;
         }
-        next.add(convId);
+        next = [...prev, convId];
       }
-      localStorage.setItem('meta_pinned_conv_ids', JSON.stringify([...next]));
+      localStorage.setItem('meta_pinned_conv_ids', JSON.stringify(next));
       return next;
     });
   };
@@ -563,9 +564,8 @@ export default function LiveInbox({ filterPageId }: { filterPageId?: string | nu
     const matchesUnread = showUnreadOnly ? (c.unread || c.id === activeId) : true;
     return matchesPage && matchesSearch && matchesUnread;
   }).sort((a, b) => {
-    // Pinned chats always appear first
-    const aPinned = pinnedIds.has(a.id) ? 1 : 0;
-    const bPinned = pinnedIds.has(b.id) ? 1 : 0;
+    const aPinned = pinnedIds.includes(a.id) ? 1 : 0;
+    const bPinned = pinnedIds.includes(b.id) ? 1 : 0;
     if (bPinned !== aPinned) return bPinned - aPinned;
     return b.lastMessageTimestamp - a.lastMessageTimestamp;
   });
@@ -780,9 +780,9 @@ export default function LiveInbox({ filterPageId }: { filterPageId?: string | nu
             ) : (
               <AnimatePresence>
                 {filteredConvs.map((conv, idx) => {
-                  const isPinned = pinnedIds.has(conv.id);
+                  const isPinned = pinnedIds.includes(conv.id);
                   const prevConv = filteredConvs[idx - 1];
-                  const prevPinned = prevConv ? pinnedIds.has(prevConv.id) : false;
+                  const prevPinned = prevConv ? pinnedIds.includes(prevConv.id) : false;
                   const showPinnedHeader = isPinned && idx === 0;
                   const showUnpinnedHeader = !isPinned && (idx === 0 || prevPinned);
                   const pageIdx = pages.findIndex(p => p.id === conv.pageId);
@@ -795,7 +795,7 @@ export default function LiveInbox({ filterPageId }: { filterPageId?: string | nu
                           <span className="text-[10px] font-semibold text-yellow-400 uppercase tracking-wider">Pinned</span>
                         </div>
                       )}
-                      {showUnpinnedHeader && pinnedIds.size > 0 && (
+                      {showUnpinnedHeader && pinnedIds.length > 0 && (
                         <div className="flex items-center gap-1.5 px-1 py-1 mb-1 mt-2">
                           <div className="flex-1 h-px bg-border" />
                           <span className="text-[10px] text-textMuted uppercase tracking-wider">All Chats</span>
