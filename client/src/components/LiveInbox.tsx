@@ -68,7 +68,7 @@ export default function LiveInbox({ filterPageId }: { filterPageId?: string | nu
   const [showUnreadOnly, setShowUnreadOnly] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [isAutoSyncEnabled, setIsAutoSyncEnabled] = useState(true);
-  const [syncInterval, setSyncInterval] = useState(60000);
+  const syncInterval = 5000; // Always 5s - no user control needed
   const [isSyncing, setIsSyncing] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [loadingPages, setLoadingPages] = useState<string[]>([]);
@@ -401,12 +401,12 @@ export default function LiveInbox({ filterPageId }: { filterPageId?: string | nu
     return () => clearInterval(fastInterval);
   }, [isAutoSyncEnabled, selectedPageIds]);
 
-  // Full sync at user-configured interval (30s / 60s)
+  // Full sync every 5s - always on, no user control
   useEffect(() => {
-    if (!isAutoSyncEnabled || selectedPageIds.length === 0) return;
-    const interval = setInterval(() => fetchAllConversations(true), syncInterval);
+    if (selectedPageIds.length === 0) return;
+    const interval = setInterval(() => fetchAllConversations(true), 5000);
     return () => clearInterval(interval);
-  }, [isAutoSyncEnabled, selectedPageIds, syncInterval]);
+  }, [selectedPageIds]);
 
   const togglePageSelection = (pageId: string) => {
     setSelectedPageIds(prev =>
@@ -687,30 +687,15 @@ export default function LiveInbox({ filterPageId }: { filterPageId?: string | nu
           )}
         </div>
 
-        {/* Right Side: Live Sync Options */}
+        {/* Right Side: Live Sync Status */}
         <div className="flex items-center gap-2">
-          <span className={`text-xs flex items-center gap-1 ${isAutoSyncEnabled ? 'text-green-400' : 'text-textMuted'}`}>
-            <span className={`w-1.5 h-1.5 rounded-full ${isAutoSyncEnabled ? 'bg-green-500' : 'bg-gray-500'} ${isSyncing ? 'animate-ping' : ''}`} />
-            {isSyncing ? 'Syncing...' : isAutoSyncEnabled ? 'Live' : 'Paused'}
+          <span className="text-xs flex items-center gap-1.5 text-green-400">
+            <span className={`w-1.5 h-1.5 rounded-full bg-green-500 ${isSyncing ? 'animate-ping' : 'animate-pulse'}`} />
+            {isSyncing ? 'Syncing...' : '⚡ Live'}
           </span>
-          <button onClick={() => setIsAutoSyncEnabled(!isAutoSyncEnabled)} className={`relative inline-flex h-4 w-8 items-center rounded-full transition-colors ${isAutoSyncEnabled ? 'bg-primary' : 'bg-surface border border-border'}`}>
-            <span className={`inline-block h-2 w-2 transform rounded-full bg-white transition-transform ${isAutoSyncEnabled ? 'translate-x-5' : 'translate-x-1'}`} />
-          </button>
-          
-          <select 
-            value={syncInterval} 
-            onChange={(e) => setSyncInterval(Number(e.target.value))}
-            disabled={!isAutoSyncEnabled}
-            className="bg-background border border-border rounded text-[10px] text-textMuted px-1 py-0.5 outline-none cursor-pointer hover:border-primary transition-colors disabled:opacity-50"
-          >
-            <option value={15000}>15s</option>
-            <option value={30000}>30s</option>
-            <option value={60000}>60s</option>
-          </select>
-
           <button onClick={() => fetchAllConversations()} className="flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-primary text-white font-medium hover:bg-primary/90 transition-colors text-[10px] shadow-sm">
             <RefreshCw className={`w-3 h-3 ${isLoading ? 'animate-spin' : ''}`} />
-            Manual Sync
+            Refresh
           </button>
         </div>
       </div>
