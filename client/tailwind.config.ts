@@ -6,18 +6,19 @@ const config: Config = {
     "./src/components/**/*.{js,ts,jsx,tsx,mdx}",
     "./src/app/**/*.{js,ts,jsx,tsx,mdx}",
   ],
+  darkMode: 'class',
   theme: {
     extend: {
       colors: {
-        background: "#0a0a0f",
-        surface: "rgba(255, 255, 255, 0.03)",
-        surfaceHover: "rgba(255, 255, 255, 0.08)",
-        primary: "#4f46e5",
-        primaryHover: "#6366f1",
-        secondary: "#a855f7",
-        border: "rgba(255, 255, 255, 0.1)",
-        textMain: "#f8fafc",
-        textMuted: "#94a3b8"
+        background: "var(--background)",
+        surface: "var(--surface)",
+        surfaceHover: "var(--surface-hover)",
+        primary: "var(--primary)",
+        primaryHover: "var(--primary-hover)",
+        secondary: "var(--secondary)",
+        border: "var(--border)",
+        textMain: "var(--text-main)",
+        textMuted: "var(--text-muted)"
       },
       backgroundImage: {
         'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',

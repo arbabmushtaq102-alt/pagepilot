@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { CheckCircle, Trash2, Key, Calendar, ShieldCheck, Clock, LogOut, RefreshCw } from "lucide-react";
+import { CheckCircle, Trash2, Key, Calendar, ShieldCheck, Clock, LogOut, RefreshCw, Moon, Sun } from "lucide-react";
 import { createClient } from "@/utils/supabase/client";
 
 // ✅ ONE single App ID for ALL users — exactly like Hootsuite / PageInteract
@@ -14,7 +14,32 @@ export default function SettingsPage() {
   const [license, setLicense] = useState<any>(null);
   const [daysRemaining, setDaysRemaining] = useState<number>(0);
   const [isConnecting, setIsConnecting] = useState(false);
+  const [theme, setTheme] = useState<'light' | 'dark'>('dark');
   const supabase = createClient();
+
+  useEffect(() => {
+    // Initialize theme
+    if (typeof window !== 'undefined') {
+      const savedTheme = localStorage.getItem('theme') as 'light' | 'dark' | null;
+      if (savedTheme) {
+        setTheme(savedTheme);
+      } else if (document.documentElement.classList.contains('dark')) {
+        setTheme('dark');
+      } else {
+        setTheme('light');
+      }
+    }
+  }, []);
+
+  const toggleTheme = (newTheme: 'light' | 'dark') => {
+    setTheme(newTheme);
+    localStorage.setItem('theme', newTheme);
+    if (newTheme === 'dark') {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+  };
 
   // ── Save connection to Supabase for cross-device sync ──
   const saveToCloud = async (pages: any[], profile: any, token: string) => {
@@ -361,6 +386,31 @@ export default function SettingsPage() {
           </div>
         </div>
       )}
+
+      {/* Theme Options */}
+      <div className="glass rounded-2xl p-6 border border-border/50">
+        <h3 className="text-lg font-semibold mb-4">Appearance</h3>
+        <div className="flex items-center justify-between">
+          <div>
+            <p className="font-medium">Theme Mode</p>
+            <p className="text-sm text-textMuted">Choose between light and dark mode</p>
+          </div>
+          <div className="flex items-center bg-surface border border-border rounded-xl p-1 gap-1">
+            <button
+              onClick={() => toggleTheme('light')}
+              className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all ${theme === 'light' ? 'bg-background shadow-md text-textMain' : 'text-textMuted hover:text-textMain'}`}
+            >
+              <Sun className="w-4 h-4" /> Light
+            </button>
+            <button
+              onClick={() => toggleTheme('dark')}
+              className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all ${theme === 'dark' ? 'bg-background shadow-md text-textMain' : 'text-textMuted hover:text-textMain'}`}
+            >
+              <Moon className="w-4 h-4" /> Dark
+            </button>
+          </div>
+        </div>
+      </div>
 
       {/* Auto Sync */}
       <div className="glass rounded-2xl p-6 border border-border/50">
