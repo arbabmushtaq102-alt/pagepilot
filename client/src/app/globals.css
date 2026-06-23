@@ -42,6 +42,11 @@
       -webkit-text-fill-color: var(--text-main) !important;
       transition: background-color 5000s ease-in-out 0s;
   }
+
+  /* Defeat Password Managers injecting white backgrounds */
+  input[type="password"] {
+      color: var(--text-main) !important;
+  }
 }
 
 @layer utilities {

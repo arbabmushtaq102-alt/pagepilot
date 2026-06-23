@@ -93,7 +93,7 @@ export default function LoginPage() {
                   name="email"
                   type="email"
                   required
-                  className="block w-full pl-10 pr-3 py-3 border border-border rounded-xl bg-surface/50 text-textMain placeholder-textMuted focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
+                  className="block w-full pl-10 pr-3 py-3 border border-border rounded-xl !bg-surface/50 !text-textMain placeholder-textMuted focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
                   placeholder="you@company.com"
                 />
               </div>
@@ -114,7 +114,7 @@ export default function LoginPage() {
                   name="password"
                   type={showPassword ? "text" : "password"}
                   required
-                  className="block w-full pl-10 pr-10 py-3 border border-border rounded-xl bg-surface/50 text-textMain placeholder-textMuted focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
+                  className="block w-full pl-10 pr-10 py-3 border border-border rounded-xl !bg-surface/50 !text-textMain placeholder-textMuted focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
                   placeholder="••••••••"
                 />
                 <button

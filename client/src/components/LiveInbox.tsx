@@ -305,7 +305,9 @@ export default function LiveInbox({ filterPageId }: { filterPageId?: string | nu
       .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'inbox_sync_pings' }, (payload) => {
         if (selectedPageIdsRef.current.includes(payload.new.page_id)) {
           console.log("⚡ Realtime Ping received for page:", payload.new.page_id);
-          fetchAllConversations(true);
+          fetchAllConversations(true); // Fetch immediately
+          setTimeout(() => fetchAllConversations(true), 2500); // Fetch again 2.5s later (beats FB Cache)
+          setTimeout(() => fetchAllConversations(true), 5000); // Super safe fallback
         }
       })
       .subscribe();
