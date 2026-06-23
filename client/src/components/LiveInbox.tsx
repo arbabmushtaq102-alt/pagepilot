@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { Check, CheckCheck, Send, Plus, X, User as UserIcon, RefreshCw, AlertTriangle, Search, Filter, Smile, Image as ImageIcon, Bot, ToggleLeft, ToggleRight, Pin, PinOff } from "lucide-react";
+import { Check, CheckCheck, Send, Plus, X, User as UserIcon, RefreshCw, AlertTriangle, Search, Filter, Smile, Image as ImageIcon, Bot, ToggleLeft, ToggleRight, Pin, PinOff, Sparkles, Paperclip } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { createClient } from "@/utils/supabase/client";
 
@@ -84,6 +84,7 @@ export default function LiveInbox({ filterPageId }: { filterPageId?: string | nu
   const [newTagText, setNewTagText] = useState("");
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const [isSendingImage, setIsSendingImage] = useState(false);
+  const [isImprovingChat, setIsImprovingChat] = useState(false);
   // Bot state
   const [botConfigs, setBotConfigs] = useState<Record<string, boolean>>({}); // pageId -> isEnabled
   const [disabledLeadIds, setDisabledLeadIds] = useState<Set<string>>(new Set());
@@ -440,6 +441,26 @@ export default function LiveInbox({ filterPageId }: { filterPageId?: string | nu
       }
     } catch { alert("Network error sending image."); }
     finally { setIsSendingImage(false); }
+  };
+
+  const handleImproveChat = async () => {
+    if (!replyText.trim() || isImprovingChat) return;
+    setIsImprovingChat(true);
+    try {
+      const res = await fetch('/api/improve-chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text: replyText })
+      });
+      const data = await res.json();
+      if (data.improvedText) {
+        setReplyText(data.improvedText);
+      }
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setIsImprovingChat(false);
+    }
   };
 
   const handleSendReply = async () => {
@@ -1019,46 +1040,35 @@ export default function LiveInbox({ filterPageId }: { filterPageId?: string | nu
               </div>
 
               {/* Reply Box */}
-              <div className="p-3 border-t border-border bg-surface/30">
-                {/* Emoji Picker */}
-                {showEmojiPicker && (
-                  <div className="mb-2 p-3 bg-background border border-border rounded-xl grid grid-cols-10 gap-1">
-                    {EMOJI_LIST.map(emoji => (
-                      <button key={emoji} onClick={() => setReplyText(prev => prev + emoji)}
-                        className="text-xl hover:bg-surface rounded-lg p-1 transition-colors leading-none">
-                        {emoji}
-                      </button>
-                    ))}
-                  </div>
-                )}
-                {/* Toolbar */}
-                <div className="flex items-center gap-2 mb-2">
-                  <button onClick={() => setShowEmojiPicker(!showEmojiPicker)}
-                    className={`p-2 rounded-lg transition-colors ${showEmojiPicker ? 'bg-primary/20 text-primary' : 'hover:bg-surface text-textMuted hover:text-textMain'}`}>
-                    <Smile className="w-5 h-5" />
-                  </button>
+              <div className="p-4 border-t border-border bg-surface/30">
+                <input ref={fileInputRef} type="file" accept="image/*,video/*,application/pdf" className="hidden"
+                  onChange={e => { const f = e.target.files?.[0]; if (f) handleSendImage(f); e.target.value = ""; }}
+                />
+
+                <div className="flex gap-2 items-end">
                   <button onClick={() => fileInputRef.current?.click()}
                     disabled={isSendingImage}
-                    className="p-2 rounded-lg hover:bg-surface text-textMuted hover:text-textMain transition-colors disabled:opacity-50" title="Send Image">
-                    {isSendingImage ? <RefreshCw className="w-5 h-5 animate-spin" /> : <ImageIcon className="w-5 h-5" />}
+                    className="p-2 mb-1 text-textMuted hover:text-textMain transition-colors disabled:opacity-50" title="Send Image/Attachment">
+                    {isSendingImage ? <RefreshCw className="w-5 h-5 animate-spin" /> : <Paperclip className="w-5 h-5" />}
                   </button>
-                  <input ref={fileInputRef} type="file" accept="image/*,video/*,application/pdf" className="hidden"
-                    onChange={e => { const f = e.target.files?.[0]; if (f) handleSendImage(f); e.target.value = ""; }}
-                  />
-                  <span className="text-xs text-textMuted ml-auto">Enter to send · Shift+Enter for new line</span>
-                </div>
-                <div className="flex gap-2 items-end">
+                  
                   <textarea
                     value={replyText}
                     onChange={e => setReplyText(e.target.value)}
                     onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleSendReply(); } }}
-                    placeholder={`Reply to ${activeConv.customerName} via ${activeConv.pageName}...`}
-                    rows={2}
-                    className="flex-1 bg-background border border-border rounded-xl px-4 py-3 text-sm text-textMain focus:outline-none focus:border-primary resize-none transition-colors"
+                    placeholder="Type a message..."
+                    rows={1}
+                    className="flex-1 min-h-[44px] bg-background border border-border rounded-3xl px-4 py-3 text-sm text-textMain focus:outline-none focus:border-primary resize-none transition-colors"
                   />
+                  
+                  <button onClick={handleImproveChat} disabled={!replyText.trim() || isImprovingChat}
+                    className="p-2 mb-1 text-purple-500 hover:text-purple-600 transition-colors disabled:opacity-50 flex items-center justify-center" title="Improve with AI">
+                    {isImprovingChat ? <RefreshCw className="w-5 h-5 animate-spin" /> : <Sparkles className="w-5 h-5" />}
+                  </button>
+
                   <button onClick={handleSendReply} disabled={!replyText.trim()}
-                    className="p-3 rounded-xl bg-primary hover:bg-primaryHover text-white disabled:opacity-50 transition-all shrink-0 shadow-lg">
-                    <Send className="w-5 h-5" />
+                    className="w-[44px] h-[44px] mb-[1px] rounded-full bg-blue-600 hover:bg-blue-700 text-white disabled:opacity-50 transition-all shrink-0 shadow-sm flex items-center justify-center">
+                    <Send className="w-4 h-4 ml-[2px]" />
                   </button>
                 </div>
               </div>
