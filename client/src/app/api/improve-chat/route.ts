@@ -36,7 +36,8 @@ export async function POST(request: Request) {
     const data = await response.json();
     if (data.error) {
       console.error('OpenRouter error:', data.error);
-      return NextResponse.json({ error: 'OpenRouter Error' }, { status: 500 });
+      const errorMsg = data.error.message || JSON.stringify(data.error);
+      return NextResponse.json({ error: errorMsg }, { status: 500 });
     }
 
     let improvedText = data.choices?.[0]?.message?.content || text;
