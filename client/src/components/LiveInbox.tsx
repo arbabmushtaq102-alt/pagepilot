@@ -309,9 +309,18 @@ export default function LiveInbox({ filterPageId }: { filterPageId?: string | nu
           // Optimistically update UI if payload is provided! (0ms delay)
           const msgData = payload.new.payload;
           if (msgData && msgData.senderId && msgData.text) {
-            const convId = `${payload.new.page_id}_${msgData.senderId}`;
             setAllConversations(prev => {
-              const existingIndex = prev.findIndex(c => c.id === convId);
+              const existingIndex = prev.findIndex(c => c.pageId === payload.new.page_id && c.customerId === msgData.senderId);
+              
+              const newMsg: Message = {
+                id: Math.random().toString(),
+                sender: "customer",
+                text: msgData.text,
+                time: "Just now",
+                timestamp: msgData.timestamp || Date.now(),
+                isBot: false
+              };
+
               if (existingIndex > -1) {
                 const updated = [...prev];
                 const c = updated[existingIndex];
@@ -320,14 +329,6 @@ export default function LiveInbox({ filterPageId }: { filterPageId?: string | nu
                 if (c.messages.some(m => m.text === msgData.text && Date.now() - m.timestamp < 60000)) {
                    return prev;
                 }
-
-                const newMsg: Message = {
-                  id: Math.random().toString(),
-                  sender: "customer",
-                  text: msgData.text,
-                  time: "Just now",
-                  timestamp: msgData.timestamp || Date.now()
-                };
                 
                 updated[existingIndex] = {
                   ...c,
@@ -338,8 +339,25 @@ export default function LiveInbox({ filterPageId }: { filterPageId?: string | nu
                   messages: [...c.messages, newMsg]
                 };
                 return updated.sort((a, b) => b.lastMessageTimestamp - a.lastMessageTimestamp);
+              } else {
+                // Optimistically create a new conversation for brand new customers
+                const activePageInfo = pagesRef.current.find(p => p.id === payload.new.page_id);
+                const newConv: Conversation = {
+                  id: `optimistic_${payload.new.page_id}_${msgData.senderId}`,
+                  customerName: "New Message...",
+                  customerId: msgData.senderId,
+                  unread: true,
+                  replied: false,
+                  lastMessageTime: "Just now",
+                  lastMessageTimestamp: msgData.timestamp || Date.now(),
+                  labels: [],
+                  messages: [newMsg],
+                  pageId: payload.new.page_id,
+                  pageName: activePageInfo?.name || "Connected Page",
+                  pageColor: "from-blue-500 to-blue-700",
+                };
+                return [newConv, ...prev];
               }
-              return prev; // If conversation isn't loaded yet, rely on Facebook fetch
             });
           }
 
