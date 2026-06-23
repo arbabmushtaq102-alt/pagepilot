@@ -180,17 +180,12 @@ export default function LiveInbox({ filterPageId }: { filterPageId?: string | nu
     await Promise.all(selectedPages.map(async (page, idx) => {
       if (!silent) setLoadingPages(prev => [...prev, page.id]);
       try {
-        let url: string | null =
+        let url: string =
           `https://graph.facebook.com/v19.0/${page.id}/conversations?fields=participants,messages.limit(20){message,from,created_time}&limit=30&access_token=${page.access_token}`;
-        const allPageConvs: any[] = [];
-        while (url) {
-          const res: any = await fetch(url);
-          const data: any = await res.json();
-          if (data.error) throw new Error(data.error.message);
-          allPageConvs.push(...(data.data || []));
-          url = data.paging?.next || null;
-          if (allPageConvs.length >= 500) break;
-        }
+        const res: any = await fetch(url);
+        const data: any = await res.json();
+        if (data.error) throw new Error(data.error.message);
+        const allPageConvs: any[] = data.data || [];
         const convs: Conversation[] = allPageConvs.map((conv: any) => {
           const participant = conv.participants?.data?.find((p: any) => p.id !== page.id);
           const customerName = participant?.name || "Unknown Customer";
@@ -370,9 +365,9 @@ export default function LiveInbox({ filterPageId }: { filterPageId?: string | nu
     return () => { supabase.removeChannel(channel); };
   }, [selectedPageIds]);
 
-  // ✅ Fast 10s lightweight poll — checks for new messages without hammering the API
+  // ⚡ Fast 5s lightweight poll - always on, checks only top 5 convs for speed
   useEffect(() => {
-    if (!isAutoSyncEnabled || selectedPageIds.length === 0) return;
+    if (selectedPageIds.length === 0) return;
     const fastInterval = setInterval(async () => {
       const currentPages = pagesRef.current.filter(p => selectedPageIdsRef.current.includes(p.id));
       if (currentPages.length === 0) return;
@@ -388,7 +383,6 @@ export default function LiveInbox({ filterPageId }: { filterPageId?: string | nu
             const msgs = conv.messages?.data || [];
             if (msgs.length === 0) return;
             const newestMsgTime = new Date(msgs[0].created_time).getTime();
-            // ✅ Read from ref — no state setter needed
             const existing = allConversationsRef.current.find(c => c.id === convId);
             if (!existing || newestMsgTime > existing.lastMessageTimestamp) {
               anyNew = true;
@@ -399,13 +393,6 @@ export default function LiveInbox({ filterPageId }: { filterPageId?: string | nu
       if (anyNew) fetchAllConversations(true);
     }, 5000);
     return () => clearInterval(fastInterval);
-  }, [isAutoSyncEnabled, selectedPageIds]);
-
-  // Full sync every 5s - always on, no user control
-  useEffect(() => {
-    if (selectedPageIds.length === 0) return;
-    const interval = setInterval(() => fetchAllConversations(true), 5000);
-    return () => clearInterval(interval);
   }, [selectedPageIds]);
 
   const togglePageSelection = (pageId: string) => {
