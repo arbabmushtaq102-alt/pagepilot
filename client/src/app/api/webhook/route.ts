@@ -55,18 +55,15 @@ async function processWebhookLogic(body: any) {
         console.log(`\n📩 [BOT] From: ${senderId} | Page: ${pageId} | Msg: "${messageText}"`);
 
         // --- 0. Broadcast Sync Ping with Payload for INSTANT UI Update ---
-        const messagePayload = {
-          senderId: senderId,
-          text: messageText,
-          timestamp: Date.now()
-        };
-        await supabase.from('inbox_sync_pings').insert({ 
-          page_id: pageId,
-          payload: messagePayload
-        }).then(() => {}).catch(e => {
-          // Fallback if user hasn't added the payload column yet
-          supabase.from('inbox_sync_pings').insert({ page_id: pageId }).then(() => {});
-        });
+        try {
+          await supabase.from('inbox_sync_pings').insert({ 
+            page_id: pageId,
+            payload: { senderId, text: messageText, timestamp: Date.now() }
+          });
+        } catch {
+          // Fallback - insert without payload
+          try { await supabase.from('inbox_sync_pings').insert({ page_id: pageId }); } catch {}
+        }
 
         // --- 1. Fetch bot config and disabled leads for this page ---
         const { data: botConfig } = await supabase
