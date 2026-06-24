@@ -22,10 +22,25 @@ export default function Footer() {
               <span className="text-white font-medium">Page Pilot Software Limited by Nexo Solutions.</span><br className="mb-2" />
               We are a cutting-edge software company dedicated to building next-generation SaaS tools. Our mission is to empower digital marketers, agencies, and e-commerce brands to scale their social media presence, automate customer interactions, and supercharge their CRM capabilities using advanced AI technology.
             </p>
-            <div className="flex items-center gap-2">
-              <span className="text-xs font-medium text-textMuted bg-background/50 px-4 py-2 rounded-xl border border-border">
-                &copy; {new Date().getFullYear()} Page Pilot Software Limited. All rights reserved.
-              </span>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+              <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: '8px' }}>
+                <span className="text-xs font-medium text-textMuted bg-background/50 px-4 py-2 rounded-xl border border-border">
+                  &copy; {new Date().getFullYear()} Page Pilot Software Limited. All rights reserved.
+                </span>
+                <span style={{
+                  fontSize: '12px',
+                  fontWeight: '600',
+                  color: '#ffffff',
+                  background: 'rgba(99, 102, 241, 0.25)',
+                  border: '1px solid rgba(99, 102, 241, 0.4)',
+                  borderRadius: '12px',
+                  padding: '6px 14px',
+                  letterSpacing: '0.01em',
+                  display: 'inline-block',
+                }}>
+                  Muhammad Arbab — CEO &amp; Founder
+                </span>
+              </div>
             </div>
           </div>
           
